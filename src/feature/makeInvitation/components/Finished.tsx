@@ -6,8 +6,6 @@ import { mdiContentCopy } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useState } from 'react';
 import SuccessToastUI from '../../../interface/SucessToastUI';
-import finishedImage from '@/assets/images/finished.webp';
-import kakaoImage from '@/assets/images/kakaotalk.webp';
 
 export default function Finished() {
   const [showToast, setShowToast] = useState(false);
@@ -35,7 +33,7 @@ export default function Finished() {
           친구들에게 공유하고 약속 장소를 정해보세요 !
         </SubTitle>
       </HeaderRow>
-      <CenterImg src={finishedImage} alt="완료 캐릭터" />
+      <CenterImg src="/finished.webp" alt="완료 캐릭터" />
       <ButtonList>
         <CopyButton  onClick={() => {
             setShowToast(true);
@@ -44,7 +42,7 @@ export default function Finished() {
           <CopyText>링크 복사하기</CopyText>
         </CopyButton>
         <KakaoButton onClick={() => shareKakaoWithTemplate('https://www.google.com', 120740)}>
-          <KakaoIcon src={kakaoImage} alt="카카오톡" />
+          <KakaoIcon src="/kakaotalk.webp" alt="카카오톡" />
           <KakaoText>카카오톡으로 공유하기</KakaoText>
         </KakaoButton>
       </ButtonList>

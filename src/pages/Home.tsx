@@ -3,7 +3,6 @@ import { typography } from '../styles/typography';
 import { grayscale } from '../styles/colors/grayscale';
 import { primary } from '../styles/colors/primary';
 import { useNavigate } from 'react-router-dom';
-import logoImage from '@/assets/images/logo.webp';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -14,7 +13,7 @@ const Home = () => {
         <LogoText>어디</LogoText>
         <LogoGo>GO</LogoGo>
       </LogoRow>
-      <CharacterImg src={logoImage} alt="캐릭터" />
+      <CharacterImg src="/logo.webp" alt="캐릭터" />
       <Description>
         초대장을 만들어서<br />
         친구들에게 공유해보세요
