@@ -92,7 +92,8 @@ const Input = styled.input`
   padding: 15px;
   border-radius: 8px;
   border: 1px solid ${grayscale[60]};
-  font-size: ${typography.body.small.fontSize}px;
+  font-size: 16px;
+  // font-size: ${typography.body.small.fontSize}px;
   color: ${grayscale[100]};
   transition: border 0.2s;
   &:focus {
