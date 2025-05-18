@@ -1,23 +1,20 @@
 // src/App.tsx
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
-import { AboutPage, About } from './pages/About';
-import Counter from './pages/Counter';
+import MakeInvitationPage from './pages/MakeInvitation';
+import { useEffect } from 'react';
+
 function App() {
+  useEffect(() => {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init('684db8e1b4af0ef1eac7f7cfeeaca3c9');
+    }
+  }, []);
   return (
     <div>
-      <nav style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
-        <Link to="/" style={{ marginRight: '10px' }}>Home</Link>
-        <Link to="/about" style={{ marginRight: '10px' }}>About</Link>
-        <Link to="/aboutpage" style={{ marginRight: '10px' }}>AboutPage</Link>
-        <Link to="/counter">Counter</Link>
-      </nav>
-
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/aboutpage" element={<AboutPage />} />
-        <Route path="/counter" element={<Counter />} />
+        <Route path="/make-invitation" element={<MakeInvitationPage />} />
       </Routes>
     </div>
   );
