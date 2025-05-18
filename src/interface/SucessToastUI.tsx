@@ -4,6 +4,7 @@ import { typography } from '../styles/typography';
 import { grayscale } from '../styles/colors/grayscale';
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import checkmarkImage from '@/assets/images/Checkmark.webp';
 
 interface SuccessToastUIProps {
   text: string;
@@ -43,7 +44,7 @@ export default function SuccessToastUI({ text, show, duration = 1800, onClose }:
             zIndex: 9999,
           }}
         >
-          <CheckIcon src="/Checkmark.webp" alt="성공" />
+          <CheckIcon src={checkmarkImage} alt="성공" />
           <ToastText>{text}</ToastText>
         </motion.div>
       )}

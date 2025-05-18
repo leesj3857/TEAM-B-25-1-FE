@@ -3,13 +3,16 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import MakeInvitationPage from './pages/MakeInvitation';
 import { useEffect } from 'react';
+import { preloadAllWebpImages } from './utils/preloadImages';
 
 function App() {
   useEffect(() => {
     if (window.Kakao && !window.Kakao.isInitialized()) {
       window.Kakao.init('684db8e1b4af0ef1eac7f7cfeeaca3c9');
     }
+    preloadAllWebpImages();
   }, []);
+  
   return (
     <div>
       <Routes>

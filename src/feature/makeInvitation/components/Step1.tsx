@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { primary } from '../../../styles/colors/primary';
 import { typography } from '../../../styles/typography';
+import invitation1Image from '@/assets/images/invitation1.webp';
+import beerImage from '@/assets/images/beer.webp';  
+import notebookImage from '@/assets/images/notebook.webp';
 
 interface Step1Props {
   onNext: () => void;
@@ -11,14 +14,14 @@ interface Step1Props {
 const CARD_LIST = [
   {
     key: 'friend',
-    icon: '/beer.webp',
+    icon: beerImage,
     title: '친목',
     desc: '먹고 놀고 떠들고',
     color: primary[20],
   },
   {
     key: 'project',
-    icon: '/notebook.webp',
+    icon: notebookImage,
     title: '프로젝트',
     desc: '회의하고, 공부하고',
     color: primary[20],
@@ -33,7 +36,7 @@ export default function Step1({ onNext }: Step1Props) {
       <HeaderRow>
         <Title>
           초대장을 만들어 보세요
-          <InviteImg src="/invitation1.webp" alt="초대장" />
+          <InviteImg src={invitation1Image} alt="초대장" />
         </Title>
         <Title>
           친구들과 연결될 수 있습니다 !
