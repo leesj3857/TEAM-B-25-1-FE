@@ -27,13 +27,13 @@ export default function Finished() {
     <Container>
       <HeaderRow>
         <Title>
-          초대장이 발급되었어요 ! <PartyIcon src="/party.png" alt="파티" />
+          초대장이 발급되었어요 ! <PartyIcon src="/party.webp" alt="파티" />
         </Title>
         <SubTitle>
           친구들에게 공유하고 약속 장소를 정해보세요 !
         </SubTitle>
       </HeaderRow>
-      <CenterImg src="/finished.png" alt="완료 캐릭터" />
+      <CenterImg src="/finished.webp" alt="완료 캐릭터" />
       <ButtonList>
         <CopyButton>
           <Icon path={mdiContentCopy} size={0.9} color={secondary[70]} />
@@ -42,7 +42,7 @@ export default function Finished() {
           }}>링크 복사하기</CopyText>
         </CopyButton>
         <KakaoButton onClick={() => shareKakaoWithTemplate('https://www.google.com', 120740)}>
-          <KakaoIcon src="/kakaotalk.png" alt="카카오톡" />
+          <KakaoIcon src="/kakaotalk.webp" alt="카카오톡" />
           <KakaoText>카카오톡으로 공유하기</KakaoText>
         </KakaoButton>
       </ButtonList>

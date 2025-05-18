@@ -43,7 +43,7 @@ export default function SuccessToastUI({ text, show, duration = 1800, onClose }:
             zIndex: 9999,
           }}
         >
-          <CheckIcon src="/Checkmark.png" alt="성공" />
+          <CheckIcon src="/Checkmark.webp" alt="성공" />
           <ToastText>{text}</ToastText>
         </motion.div>
       )}

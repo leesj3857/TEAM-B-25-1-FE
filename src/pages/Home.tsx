@@ -13,7 +13,7 @@ const Home = () => {
         <LogoText>어디</LogoText>
         <LogoGo>GO</LogoGo>
       </LogoRow>
-      <CharacterImg src="/logo.png" alt="캐릭터" />
+      <CharacterImg src="/logo.webp" alt="캐릭터" />
       <Description>
         초대장을 만들어서<br />
         친구들에게 공유해보세요

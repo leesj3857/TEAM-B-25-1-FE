@@ -11,14 +11,14 @@ interface Step1Props {
 const CARD_LIST = [
   {
     key: 'friend',
-    icon: '/beer.png',
+    icon: '/beer.webp',
     title: '친목',
     desc: '먹고 놀고 떠들고',
     color: primary[20],
   },
   {
     key: 'project',
-    icon: '/notebook.png',
+    icon: '/notebook.webp',
     title: '프로젝트',
     desc: '회의하고, 공부하고',
     color: primary[20],
@@ -33,7 +33,7 @@ export default function Step1({ onNext }: Step1Props) {
       <HeaderRow>
         <Title>
           초대장을 만들어 보세요
-          <InviteImg src="/invitation1.png" alt="초대장" />
+          <InviteImg src="/invitation1.webp" alt="초대장" />
         </Title>
         <Title>
           친구들과 연결될 수 있습니다 !
