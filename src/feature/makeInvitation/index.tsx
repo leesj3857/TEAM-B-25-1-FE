@@ -39,12 +39,11 @@ const slideVariants = {
 const MakeInvitation = () => {
   const [steps, setSteps] = useState<ProcessStep[]>(stepsInit);
   const [current, setCurrent] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState(1); // 1: next, -1: prev
 
   const handleNext = () => {
     setDirection(1);
-    handleNextOrig({ steps, current, setSteps, setCurrent, setIsAnimating });
+    handleNextOrig({ steps, current, setSteps, setCurrent });
   };
   const handlePrev = () => {
     setDirection(-1);

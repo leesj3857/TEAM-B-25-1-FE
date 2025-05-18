@@ -2,7 +2,6 @@ import styled from '@emotion/styled';
 import { typography } from '../styles/typography';
 import { grayscale } from '../styles/colors/grayscale';
 import { primary } from '../styles/colors/primary';
-import { spacing } from '../styles/spacing';
 import { useNavigate } from 'react-router-dom';
 
 const Home = () => {

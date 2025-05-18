@@ -1,5 +1,5 @@
 // src/App.tsx
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import MakeInvitationPage from './pages/MakeInvitation';
 import { useEffect } from 'react';
