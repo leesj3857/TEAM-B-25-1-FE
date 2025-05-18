@@ -18,6 +18,7 @@ const BarContainer = styled.div`
   align-items: center;
   height: 20px;
   margin: 24px 0;
+  padding: 0 4px;
 `;
 
 const StepWrapper = styled.div`
