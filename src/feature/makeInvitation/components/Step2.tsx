@@ -63,11 +63,6 @@ const Title = styled.div`
   gap: 8px;
 `;
 
-const InviteImg = styled.img`
-  width: 20px;
-  height: 20px;
-`;
-
 const SubTitle = styled.div`
   color: ${grayscale[100]};
   font-size: ${typography.body.small.fontSize}px;

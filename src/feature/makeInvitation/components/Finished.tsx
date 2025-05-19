@@ -11,7 +11,7 @@ import Emoji from '../../../interface/Emoji';
 export default function Finished() {
   const [showToast, setShowToast] = useState(false);
 
-  function shareKakaoWithTemplate(templateId: number) {
+  const shareKakaoWithTemplate = (templateId: number) => {
     if (window.Kakao) {
       window.Kakao.Link.sendCustom({
         templateId: templateId, // 빌더에서 복사한 템플릿ID (숫자)
@@ -20,6 +20,12 @@ export default function Finished() {
         }
       });
     }
+  }
+
+
+  const handleCopy = () => {
+    setShowToast(true);
+    navigator.clipboard.writeText('http://3.139.88.251/reply/1');
   }
 
   return (
@@ -34,9 +40,7 @@ export default function Finished() {
       </HeaderRow>
       <CenterImg src="/make_invitation/finished_v1.webp" alt="완료 캐릭터" />
       <ButtonList>
-        <CopyButton  onClick={() => {
-            setShowToast(true);
-          }}>
+        <CopyButton onClick={handleCopy}>
           <Icon path={mdiContentCopy} size={0.9} color={secondary[70]} />
           <CopyText>링크 복사하기</CopyText>
         </CopyButton>
