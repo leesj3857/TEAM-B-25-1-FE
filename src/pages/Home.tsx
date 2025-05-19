@@ -18,7 +18,7 @@ const Home = () => {
         초대장을 만들어서<br />
         친구들에게 공유해보세요
       </Description>
-      <Button onClick={() => navigate('/make-invitation')}>초대장 만들기</Button>
+      <Button onClick={() => navigate('/make')}>초대장 만들기</Button>
     </Container>
   );
 };

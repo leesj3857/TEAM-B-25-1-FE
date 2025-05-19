@@ -11,14 +11,12 @@ import Emoji from '../../../interface/Emoji';
 export default function Finished() {
   const [showToast, setShowToast] = useState(false);
 
-  function shareKakaoWithTemplate(linkUrl: string, templateId: number) {
+  function shareKakaoWithTemplate(templateId: number) {
     if (window.Kakao) {
       window.Kakao.Link.sendCustom({
         templateId: templateId, // 빌더에서 복사한 템플릿ID (숫자)
         templateArgs: {
-          // 템플릿에서 변수로 지정한 값이 있다면 여기에 key-value로 전달
-          linkUrl: linkUrl,
-          // 예시: title: '초대장이 도착했어요!'
+          invitationId: 1,
         }
       });
     }
@@ -42,7 +40,7 @@ export default function Finished() {
           <Icon path={mdiContentCopy} size={0.9} color={secondary[70]} />
           <CopyText>링크 복사하기</CopyText>
         </CopyButton>
-        <KakaoButton onClick={() => shareKakaoWithTemplate('https://www.google.com', 120740)}>
+        <KakaoButton onClick={() => shareKakaoWithTemplate(120740)}>
           <KakaoIcon src="/make_invitation/kakaotalk_v1.webp" alt="카카오톡" />
           <KakaoText>카카오톡으로 공유하기</KakaoText>
         </KakaoButton>

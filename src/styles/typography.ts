@@ -14,7 +14,7 @@ export const typography = {
   body: {
     large:   { fontSize: 19, fontWeight: 400, lineHeight: '150%', letterSpacing: 0 },
     medium:  { fontSize: 17, fontWeight: 400, lineHeight: '150%', letterSpacing: 0 },
-    small:   { fontSize: 15, fontWeight: 400, lineHeight: '150%', letterSpacing: 0 },
+    small:   { fontSize: 16, fontWeight: 400, lineHeight: '150%', letterSpacing: 0 },
     xsmall:  { fontSize: 13, fontWeight: 400, lineHeight: '150%', letterSpacing: 0 },
   },
   label: {
