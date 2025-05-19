@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'Pretendard Variable';
+    src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+    font-weight: 45 920;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Tossface';
+    src: url('/fonts/TossFaceFontMac.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    margin: 0;
+    min-height: 100dvh;
+    padding: 0 24px;
+    font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+*{
+    box-sizing: border-box;
+}
