@@ -95,7 +95,7 @@ const SubTitle = styled.div`
 
 const CenterImg = styled.img`
   width: 180px;
-  height: 200px;
+  height: 175px;
   margin: 0 auto 40px auto;
   display: block;
 `;
