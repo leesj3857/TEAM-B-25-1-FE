@@ -4,6 +4,7 @@ import { grayscale } from '../../../styles/colors/grayscale';
 import { primary } from '../../../styles/colors/primary';
 import { secondary } from '../../../styles/colors/secondary';
 import { typography } from '../../../styles/typography';
+import Emoji from '../../../interface/Emoji';
 
 interface Step2Props {
   onNext: () => void;
@@ -18,13 +19,13 @@ export default function Step2({ onNext, onPrev }: Step2Props) {
       <HeaderRow>
         <Title>
           초대장 이름을 지어주세요
-          <InviteImg src="/invitation2.webp" alt="이름" />
+          <Emoji>✍️</Emoji>
         </Title>
       </HeaderRow>
       <SubTitle>
         친구들이 어떤 약속인지 알 수 있게<br />모임 이름을 작성해주세요 !
       </SubTitle>
-      <CenterImg src="/step2.webp" alt="모임 캐릭터" />
+      <CenterImg src="/make_invitation/step2_v1.webp" alt="모임 캐릭터" />
       <InputWrap>
         <Input
           placeholder="ex) 화요미식회, 제디스3 11조"
@@ -77,7 +78,7 @@ const SubTitle = styled.div`
 
 const CenterImg = styled.img`
   width: 180px;
-  height: 180px;
+  height: 175px;
   margin: 0 auto 40px auto;
   display: block;
 `;

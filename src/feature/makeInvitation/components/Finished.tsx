@@ -6,6 +6,7 @@ import { mdiContentCopy } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useState } from 'react';
 import SuccessToastUI from '../../../interface/SucessToastUI';
+import Emoji from '../../../interface/Emoji';
 
 export default function Finished() {
   const [showToast, setShowToast] = useState(false);
@@ -27,13 +28,13 @@ export default function Finished() {
     <Container>
       <HeaderRow>
         <Title>
-          초대장이 발급되었어요 ! <PartyIcon src="/party.webp" alt="파티" />
+          초대장이 발급되었어요 ! <Emoji>🥳</Emoji>
         </Title>
         <SubTitle>
           친구들에게 공유하고 약속 장소를 정해보세요 !
         </SubTitle>
       </HeaderRow>
-      <CenterImg src="/finished.webp" alt="완료 캐릭터" />
+      <CenterImg src="/make_invitation/finished_v1.webp" alt="완료 캐릭터" />
       <ButtonList>
         <CopyButton  onClick={() => {
             setShowToast(true);
@@ -42,7 +43,7 @@ export default function Finished() {
           <CopyText>링크 복사하기</CopyText>
         </CopyButton>
         <KakaoButton onClick={() => shareKakaoWithTemplate('https://www.google.com', 120740)}>
-          <KakaoIcon src="/kakaotalk.webp" alt="카카오톡" />
+          <KakaoIcon src="/make_invitation/kakaotalk_v1.webp" alt="카카오톡" />
           <KakaoText>카카오톡으로 공유하기</KakaoText>
         </KakaoButton>
       </ButtonList>
@@ -134,7 +135,7 @@ const KakaoButton = styled.button`
   padding: 13px 0;
   border-radius: 8px;
   border: none;
-  background: #FFE812;
+  background: #FFEB3B;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,11 +145,12 @@ const KakaoButton = styled.button`
 
 const KakaoIcon = styled.img`
   width: 30px;
-  height: 30px;
 `;
 
 const KakaoText = styled.span`
   color: ${grayscale[100]};
   font-size: ${typography.title.small.fontSize}px;
   font-weight: ${typography.title.small.fontWeight};
+  position: relative;
+  bottom: 1px;
 `;

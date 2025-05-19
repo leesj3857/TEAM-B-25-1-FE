@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { primary } from '../../../styles/colors/primary';
 import { typography } from '../../../styles/typography';
+import Emoji from '../../../interface/Emoji';
 
 interface Step1Props {
   onNext: () => void;
@@ -11,14 +12,14 @@ interface Step1Props {
 const CARD_LIST = [
   {
     key: 'friend',
-    icon: '/beer.webp',
+    icon: '🍺',
     title: '친목',
     desc: '먹고 놀고 떠들고',
     color: primary[20],
   },
   {
     key: 'project',
-    icon: '/notebook.webp',
+    icon: '💻',
     title: '프로젝트',
     desc: '회의하고, 공부하고',
     color: primary[20],
@@ -33,7 +34,7 @@ export default function Step1({ onNext }: Step1Props) {
       <HeaderRow>
         <Title>
           초대장을 만들어 보세요
-          <InviteImg src="/invitation1.webp" alt="초대장" />
+          <Emoji>💌</Emoji>
         </Title>
         <Title>
           친구들과 연결될 수 있습니다 !
@@ -50,7 +51,7 @@ export default function Step1({ onNext }: Step1Props) {
             color={card.color}
             onClick={() => setSelected(card.key)}
           >
-            <Icon src={card.icon} alt={card.title} />
+            <CardEmoji>{card.icon}</CardEmoji>
             <CardText>
               <CardTitle>{card.title}</CardTitle>
               <CardDesc>{card.desc}</CardDesc>
@@ -90,11 +91,6 @@ const Title = styled.div`
   gap: 8px;
 `;
 
-const InviteImg = styled.img`
-  width: 20px;
-  height: 20px;
-`;
-
 const SubTitle = styled.div`
   color: ${grayscale[100]};
   font-size: ${typography.body.small.fontSize}px;
@@ -124,18 +120,18 @@ const SelectCard = styled.div<{ selected: boolean; color: string }>`
   transition: border 0.2s, background 0.2s;
 `;
 
-const Icon = styled.img`
-  width: 30px;
-  margin-right: 24px;
-`;
-
 const CardText = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
+const CardEmoji = styled(Emoji)`
+  font-size: 30px;
+  margin-right: 24px;
+`;
+
 const CardTitle = styled.div`
-  color: ${grayscale[70]};
+  color: ${grayscale[70]};  
   font-size: ${typography.title.medium.fontSize}px;
   font-weight: ${typography.title.medium.fontWeight};
   line-height: ${typography.title.medium.lineHeight};

@@ -4,6 +4,8 @@ import { typography } from '../styles/typography';
 import { grayscale } from '../styles/colors/grayscale';
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Icon } from '@mdi/react';
+import { mdiCheck } from '@mdi/js';
 
 interface SuccessToastUIProps {
   text: string;
@@ -43,7 +45,7 @@ export default function SuccessToastUI({ text, show, duration = 1800, onClose }:
             zIndex: 9999,
           }}
         >
-          <CheckIcon src="/checkmark.webp" alt="성공" />
+          <Icon path={mdiCheck} size={1} color="#4CAF50" />
           <ToastText>{text}</ToastText>
         </motion.div>
       )}
@@ -51,10 +53,6 @@ export default function SuccessToastUI({ text, show, duration = 1800, onClose }:
   );
 }
 
-const CheckIcon = styled.img`
-  width: 26px;
-  height: 26px;
-`;
 
 const ToastText = styled.span`
   font-size: ${typography.label.small.fontSize}px;
@@ -63,5 +61,4 @@ const ToastText = styled.span`
   letter-spacing: ${typography.label.small.letterSpacing};
   color: ${grayscale[0]};
   position: relative;
-  bottom: 0.2px;
 `;
