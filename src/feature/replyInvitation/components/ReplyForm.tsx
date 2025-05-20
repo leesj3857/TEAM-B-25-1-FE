@@ -6,6 +6,7 @@ import Icon from '@mdi/react';
 import { mdiSubwayVariant, mdiCar, mdiMagnify } from '@mdi/js';
 import { primary } from '../../../styles/colors/primary';
 import { motion, AnimatePresence } from 'framer-motion';
+import AddressInputWithDropdown from '../../../interface/AddressInputWithDropdown';
 
 const TRANSPORTS = [
   { key: 'public', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
@@ -120,21 +121,13 @@ export default function ReplyForm({ invitationId }: { invitationId: string | und
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <Section>
+                    <Section style={{ position: 'relative' }}>
                       <Label>주소</Label>
                       <InputWrap>
-                        <AddressInputIcon>
-                          <Icon path={mdiMagnify} size={1} />
-                        </AddressInputIcon>
-                        <AddressInput
-                          ref={addressInputRef}
-                          placeholder="출발하실 위치를 입력해주세요"
+                        <AddressInputWithDropdown
                           value={address}
-                          onChange={e => setAddress(e.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') handleAddressNext();
-                          }}
-                          onBlur={handleAddressNext}
+                          onChange={setAddress}
+                          onNext={handleAddressNext}
                         />
                       </InputWrap>
                     </Section>
@@ -254,38 +247,6 @@ const IconWrap = styled.div`
 const InputWrap = styled.div`
   width: 100%;
   position: relative;
-`;
-
-const AddressInput = styled.input`
-  width: 100%;
-  height: 48px;
-  padding: 16px 11px 16px 40px;
-  border: 1px solid ${grayscale[60]};
-  border-radius: 8px;
-  font-size: ${typography.body.small.fontSize}px;
-  font-weight: ${typography.body.small.fontWeight};
-  line-height: ${typography.body.small.lineHeight};
-  letter-spacing: ${typography.body.small.letterSpacing}px;
-  color: ${grayscale[100]};
-  background: #fff;
-  box-sizing: border-box;
-  transition: border 0.2s;
-  &:focus {
-    outline: none;
-    border: 1px solid ${primary[30]};
-  }
-  &::placeholder {
-    color: ${grayscale[50]};
-    opacity: 1;
-  }
-`;
-
-const AddressInputIcon = styled.div`
-  position: absolute;
-  left: 11px;
-  top: 50%;
-  transform: translateY(-40%);
-  color: ${grayscale[50]};
 `;
 
 const NameInput = styled.input`

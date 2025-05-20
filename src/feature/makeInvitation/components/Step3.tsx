@@ -8,6 +8,7 @@ import { primary } from '../../../styles/colors/primary';
 import { motion, AnimatePresence } from 'framer-motion';
 import { secondary } from '../../../styles/colors/secondary';
 import Emoji from '../../../interface/Emoji';
+import AddressInputWithDropdown from '../../../interface/AddressInputWithDropdown';
 
 const TRANSPORTS = [
   { key: 'public', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
@@ -84,17 +85,10 @@ export default function Step3({ onNext, onPrev }: { onNext: () => void, onPrev: 
                     <Section>
                       <Label>주소</Label>
                       <InputWrap>
-                        <AddressInputIcon>
-                          <Icon path={mdiMagnify} size={1} />
-                        </AddressInputIcon>
-                        <AddressInput
-                          placeholder="출발하실 위치를 입력해주세요"
+                        <AddressInputWithDropdown
                           value={address}
-                          onChange={e => setAddress(e.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') handleAddressNext();
-                          }}
-                          onBlur={handleAddressNext}
+                          onChange={setAddress}
+                          onNext={handleAddressNext}
                         />
                       </InputWrap>
                     </Section>
