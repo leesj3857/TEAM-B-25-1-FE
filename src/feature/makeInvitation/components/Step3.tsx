@@ -22,8 +22,8 @@ export default function Step3({ onNext, onPrev }: { onNext: () => void, onPrev: 
   const [step, setStep] = useState(0);
 
 
-  const handleAddressNext = () => {
-    if (address.trim().length > 0 && step === 1) {
+  const handleAddressNext = (display: string) => {
+    if (display.trim().length > 0 && step === 1) {
       setStep(2);
     }
   };

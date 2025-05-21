@@ -1,87 +1,47 @@
 import styled from '@emotion/styled';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Icon from '@mdi/react';
 import { mdiMagnify, mdiMapMarker } from '@mdi/js';
 import { grayscale } from '../styles/colors/grayscale';
 import { primary } from '../styles/colors/primary';
 import { typography } from '../styles/typography';
 import { fetchBuildingNamesByAddress, JusoResult } from '../utils/jusoApi';
+import { useQuery } from '@tanstack/react-query';
 import { css } from '@emotion/react';
-
 interface AddressInputWithDropdownProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (value: string) => void;
-  onNext?: () => void;
+  onNext?: (display: string) => void;
   disabled?: boolean;
 }
 
 export default function AddressInputWithDropdown({
   value,
   onChange,
-  onSelect,
   onNext,
   disabled,
 }: AddressInputWithDropdownProps) {
-  const [addressOptions, setAddressOptions] = useState<JusoResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!value.trim()) {
-      setAddressOptions([]);
-      setShowDropdown(false);
-      setIsSelected(false);
-      return;
-    }
-    if (!showDropdown && addressOptions.length === 0 && isSelected) {
-      return;
-    }
-    setIsLoading(true);
-    const handler = setTimeout(async () => {
-      const results = await fetchBuildingNamesByAddress(value);
-      setAddressOptions(results);
-      setShowDropdown(true);
-      setIsLoading(false);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [value]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        addressInputRef.current &&
-        !addressInputRef.current.contains(event.target as Node)
-      ) {
-        setShowDropdown(false);
-      }
-    }
-    if (showDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showDropdown]);
-
-  // 입력 완료(엔터/포커스아웃) 또는 드롭다운에서 선택 시 마커로 변경
-  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (value.trim() === '') {
-      setIsSelected(false);
-      return;
-    }
-    if (onNext) onNext();
-    setIsSelected(true);
-  };
+  // 주소 검색 쿼리
+  const { data: addressOptions = [], isLoading } = useQuery({
+    queryKey: ['address', value],
+    queryFn: () => fetchBuildingNamesByAddress(value),
+    enabled: value.trim().length > 0 && !isSelected,
+    staleTime: 1000 * 60 * 5, // 5분 동안 캐시 유지
+  });
 
   const handleDropdownSelect = (display: string) => {
     onChange(display);
     setShowDropdown(false);
-    setAddressOptions([]);
     setIsSelected(true);
-    if (onSelect) onSelect(display);
+    if (onNext) onNext(display);
+    // 선택 후 focus 해제
+    if (addressInputRef.current) {
+      addressInputRef.current.blur();
+    }
   };
 
   return (
@@ -96,28 +56,32 @@ export default function AddressInputWithDropdown({
         onChange={e => {
           onChange(e.target.value);
           setIsSelected(false);
+          setShowDropdown(true);
         }}
-        onKeyDown={e => {
-          if (e.key === 'Enter') {
-            if (onNext) onNext();
-            setIsSelected(true);
-          }
+        onBlur={() => {
+          setShowDropdown(false);
         }}
-        onBlur={handleInputBlur}
         autoComplete="off"
         disabled={disabled}
       />
-      {showDropdown && addressOptions.length > 0 && (
+      {showDropdown && value.trim() && (
         <Dropdown>
           {isLoading ? (
             <DropdownItem>검색 중...</DropdownItem>
-          ) : (
+          ) : addressOptions.length > 0 ? (
             addressOptions.map((option, idx) => {
-              const display = option.bdNm && /^[가-힣a-zA-Z\s]+$/.test(option.bdNm.trim()) ? `${option.bdNm} (${option.roadAddrPart1 || option.roadAddr})` : (option.roadAddrPart1 && option.roadAddrPart1.trim() ? option.roadAddrPart1 : option.roadAddr);
+              const display = option.bdNm && /^[가-힣a-zA-Z\s]+$/.test(option.bdNm.trim()) 
+                ? `${option.bdNm} (${option.roadAddrPart1 || option.roadAddr})` 
+                : (option.roadAddrPart1 && option.roadAddrPart1.trim() 
+                  ? option.roadAddrPart1 
+                  : option.roadAddr);
               return (
                 <DropdownItem
                   key={option.bdNm + option.roadAddr + idx}
-                  onMouseDown={() => handleDropdownSelect(display)}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleDropdownSelect(display);
+                  }}
                 >
                   <MarkerIconWrap>
                     <Icon path={mdiMapMarker} size={0.9} />
@@ -126,6 +90,8 @@ export default function AddressInputWithDropdown({
                 </DropdownItem>
               );
             })
+          ) : (
+            <DropdownItem>검색 결과가 없습니다</DropdownItem>
           )}
         </Dropdown>
       )}
@@ -195,6 +161,7 @@ const DropdownItem = styled.li`
   cursor: pointer;
   display: flex;
   align-items: center;
+  user-select: none;
   &:hover {
     background: ${grayscale[40]};
   }

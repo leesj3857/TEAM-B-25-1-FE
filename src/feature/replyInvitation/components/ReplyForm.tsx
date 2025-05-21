@@ -39,8 +39,8 @@ export default function ReplyForm({ invitationId }: { invitationId: string | und
     }
   }, [showTitle]);
 
-  const handleAddressNext = () => {
-    if (address.trim().length > 0 && step === 1) {
+  const handleAddressNext = (display: string) => {
+    if (display.trim().length > 0 && step === 1) {
       setStep(2);
     }
   };
