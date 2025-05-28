@@ -134,7 +134,7 @@ const CardEmoji = styled(Emoji)`
 
 const CardTitle = styled.div<{ selected: boolean }>`
   color: ${({ selected }) =>
-    selected ? secondary[60] : grayscale[70]};
+    selected ? primary[50] : grayscale[70]};
   font-size: ${typography.title.medium.fontSize}px;
   font-weight: ${typography.title.medium.fontWeight};
   line-height: ${typography.title.medium.lineHeight};
@@ -142,7 +142,7 @@ const CardTitle = styled.div<{ selected: boolean }>`
 
 const CardDesc = styled.div<{ selected: boolean }>`
   color: ${({ selected }) =>
-    selected ? secondary[60] : grayscale[60]};
+    selected ? primary[50] : grayscale[60]};
   font-size: ${typography.body.small.fontSize}px;
   font-weight: ${typography.body.small.fontWeight};
   line-height: ${typography.body.small.lineHeight};
