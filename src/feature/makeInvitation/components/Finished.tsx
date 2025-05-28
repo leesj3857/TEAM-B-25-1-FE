@@ -7,9 +7,20 @@ import { Icon } from '@mdi/react';
 import { useState } from 'react';
 import SuccessToastUI from '../../../interface/SucessToastUI';
 import Emoji from '../../../interface/Emoji';
+import FetchingAnimation from '../interface/fetchingAnimation';   
+import { useEffect } from 'react';
 
 export default function Finished() {
   const [showToast, setShowToast] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 4000); // 3초간 애니메이션
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const shareKakaoWithTemplate = (templateId: number) => {
     if (window.Kakao) {
@@ -30,6 +41,10 @@ export default function Finished() {
 
   return (
     <Container>
+      {isLoading ? (
+        <FetchingAnimation />
+      ) : (
+        <>
       <HeaderRow>
         <Title>
           초대장이 발급되었어요 ! <Emoji>🥳</Emoji>
@@ -52,8 +67,10 @@ export default function Finished() {
       <SuccessToastUI
         text="링크 복사가 완료되었어요!"
         show={showToast}
-        onClose={() => setShowToast(false)}
-      />
+          onClose={() => setShowToast(false)}
+        />
+      </>
+      )}
     </Container>
   );
 }
