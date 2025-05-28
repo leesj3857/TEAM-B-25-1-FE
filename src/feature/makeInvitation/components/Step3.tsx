@@ -170,7 +170,8 @@ const TransportBtn = styled.button<{ selected: boolean }>`
   border-radius: 8px;
   background: ${({ selected }) =>
     selected ? `${primary[20]}20` : '#fff'};
-  color: ${grayscale[50]};
+  color: ${({ selected }) =>
+    selected ? secondary[60] : grayscale[50]};
   font-size: ${typography.body.small.fontSize}px;
   font-weight: ${typography.body.small.fontWeight};
   line-height: ${typography.body.small.lineHeight};

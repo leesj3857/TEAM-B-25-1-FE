@@ -8,7 +8,7 @@ const Home = () => {
   const navigate = useNavigate();
   return (
     <Container>
-      <Heading>모임장소 추천 서비스</Heading>
+      <Heading>우리 어디서 만날까?</Heading>
       <LogoRow>
         <LogoText>어디</LogoText>
         <LogoGo>GO</LogoGo>
@@ -37,7 +37,7 @@ const Container = styled.div`
 const Heading = styled.div`
   margin-top: 48px;
   margin-bottom: 8px;
-  color: ${grayscale[70]};
+  color: ${primary[30]};
   font-size: ${typography.heading.small.fontSize}px;
   font-weight: ${typography.heading.small.fontWeight};
   line-height: ${typography.heading.small.lineHeight};

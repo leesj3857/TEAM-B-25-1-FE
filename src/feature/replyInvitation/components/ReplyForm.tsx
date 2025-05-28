@@ -7,17 +7,17 @@ import { mdiSubwayVariant, mdiCar, mdiMagnify } from '@mdi/js';
 import { primary } from '../../../styles/colors/primary';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddressInputWithDropdown from '../../../interface/AddressInputWithDropdown';
-
+import { secondary } from '../../../styles/colors/secondary';
+import Emoji from '../../../interface/Emoji';
 const TRANSPORTS = [
   { key: 'public', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
   { key: 'car', label: '자동차', icon: <Icon path={mdiCar} size={1} /> },
 ];
 
-export default function ReplyForm({ invitationId }: { invitationId: string | undefined }) {
+export default function ReplyForm({ invitationId, handleNext }: { invitationId: string | undefined, handleNext: () => void }) {
   const [transport, setTransport] = useState<string | null>(null);
   const [address, setAddress] = useState('');
   const [name, setName] = useState('');
-  const [imgLoaded, setImgLoaded] = useState(false);
   const [showTitle, setShowTitle] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [step, setStep] = useState(0);
@@ -25,41 +25,28 @@ export default function ReplyForm({ invitationId }: { invitationId: string | und
   const addressInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (imgLoaded) {
-      const t1 = setTimeout(() => setShowTitle(true), 800);
-      return () => clearTimeout(t1);
-    }
-  }, [imgLoaded]);
 
   useEffect(() => {
-    if (showTitle) {
-      const t2 = setTimeout(() => setShowForm(true), 800);
-      return () => clearTimeout(t2);
-    }
-  }, [showTitle]);
+    setShowTitle(true);
+    const t2 = setTimeout(() => setShowForm(true), 800);
+    return () => clearTimeout(t2);
+  }, []);
 
   const handleAddressNext = (display: string) => {
     if (display.trim().length > 0 && step === 1) {
+      handleNext();
       setStep(2);
     }
   };
   const handleNameNext = () => {
     if (name.trim().length > 0 && step === 0) {
+      handleNext();
       setStep(1);
     }
   };
 
   return (
     <Container>
-      <MotionLetterImg
-        src="/letter.webp"
-        alt="초대장"
-        onLoad={() => setImgLoaded(true)}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: imgLoaded ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
-      />
       <AnimatePresence>
         {showTitle && (
           <MotionTitle
@@ -68,7 +55,7 @@ export default function ReplyForm({ invitationId }: { invitationId: string | und
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            초대장이 도착했어요<br />시작하기 위해 몇 가지만 알려주세요!
+            초대장이 도착했어요 <Emoji>😎</Emoji><br />시작하기 위해 몇 가지만 알려주세요!
           </MotionTitle>
         )}
       </AnimatePresence>
@@ -161,7 +148,7 @@ export default function ReplyForm({ invitationId }: { invitationId: string | und
               </AnimatePresence>
             </div>
             <SubmitBtn disabled={!(step === 2 && transport && address && name)}>
-              제출하기
+              모임 장소 확인하기
             </SubmitBtn>
           </motion.div>
         )}
@@ -188,7 +175,7 @@ const MotionLetterImg = styled(motion.img)`
 `;
 
 const MotionTitle = styled(motion.div)`
-  color: ${grayscale[100]};
+  color: ${grayscale[90]};
   font-size: ${typography.title.medium.fontSize}px;
   font-weight: ${typography.title.medium.fontWeight};
   line-height: ${typography.title.medium.lineHeight};
@@ -228,7 +215,8 @@ const TransportBtn = styled.button<{ selected: boolean }>`
   border-radius: 8px;
   background: ${({ selected }) =>
     selected ? `${primary[20]}20` : '#fff'};
-  color: ${grayscale[50]};
+  color: ${({ selected }) =>
+    selected ? secondary[60] : grayscale[50]};
   font-size: ${typography.body.small.fontSize}px;
   font-weight: ${typography.body.small.fontWeight};
   line-height: ${typography.body.small.lineHeight};
@@ -279,10 +267,10 @@ const SubmitBtn = styled.button`
   margin-top: 4px;
   background: ${grayscale[50]};
   color: #fff;
-  font-size: ${typography.title.medium.fontSize}px;
-  font-weight: ${typography.title.medium.fontWeight};
-  line-height: ${typography.title.medium.lineHeight};
-  letter-spacing: ${typography.title.medium.letterSpacing}px;
+  font-size: ${typography.label.medium.fontSize}px;
+  font-weight: ${typography.label.medium.fontWeight};
+  line-height: ${typography.label.medium.lineHeight};
+  letter-spacing: ${typography.label.medium.letterSpacing}px;
   border: none;
   border-radius: 8px;
   cursor: pointer;

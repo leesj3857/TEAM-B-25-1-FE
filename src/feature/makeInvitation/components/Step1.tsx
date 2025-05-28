@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { useState } from 'react';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { primary } from '../../../styles/colors/primary';
+import { secondary } from '../../../styles/colors/secondary';
 import { typography } from '../../../styles/typography';
 import Emoji from '../../../interface/Emoji';
 
@@ -53,8 +54,8 @@ export default function Step1({ onNext }: Step1Props) {
           >
             <CardEmoji>{card.icon}</CardEmoji>
             <CardText>
-              <CardTitle>{card.title}</CardTitle>
-              <CardDesc>{card.desc}</CardDesc>
+              <CardTitle selected={selected === card.key}>{card.title}</CardTitle>
+              <CardDesc selected={selected === card.key}>{card.desc}</CardDesc>
             </CardText>
           </SelectCard>
         ))}
@@ -118,6 +119,7 @@ const SelectCard = styled.div<{ selected: boolean; color: string }>`
   height: 80px;
   cursor: pointer;
   transition: border 0.2s, background 0.2s;
+  
 `;
 
 const CardText = styled.div`
@@ -130,15 +132,17 @@ const CardEmoji = styled(Emoji)`
   margin-right: 24px;
 `;
 
-const CardTitle = styled.div`
-  color: ${grayscale[70]};  
+const CardTitle = styled.div<{ selected: boolean }>`
+  color: ${({ selected }) =>
+    selected ? secondary[60] : grayscale[70]};
   font-size: ${typography.title.medium.fontSize}px;
   font-weight: ${typography.title.medium.fontWeight};
   line-height: ${typography.title.medium.lineHeight};
 `;
 
-const CardDesc = styled.div`
-  color: ${grayscale[60]};
+const CardDesc = styled.div<{ selected: boolean }>`
+  color: ${({ selected }) =>
+    selected ? secondary[60] : grayscale[60]};
   font-size: ${typography.body.small.fontSize}px;
   font-weight: ${typography.body.small.fontWeight};
   line-height: ${typography.body.small.lineHeight};
