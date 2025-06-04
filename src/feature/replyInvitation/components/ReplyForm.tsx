@@ -1,13 +1,13 @@
 import styled from '@emotion/styled';
 import { grayscale } from '../../../styles/colors/grayscale';
-import { typography } from '../../../styles/typography';
+import { typography, applyTypography } from '../../../styles/typography';
 import { useState, useEffect, useRef } from 'react';
 import Icon from '@mdi/react';
 import { mdiSubwayVariant, mdiCar, mdiMagnify } from '@mdi/js';
 import { primary } from '../../../styles/colors/primary';
 import { motion, AnimatePresence } from 'framer-motion';
 import AddressInputWithDropdown from '../../../interface/AddressInputWithDropdown';
-import { secondary } from '../../../styles/colors/secondary';
+import { button } from '../../../styles/button';
 import Emoji from '../../../interface/Emoji';
 const TRANSPORTS = [
   { key: 'public', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
@@ -176,9 +176,7 @@ const MotionLetterImg = styled(motion.img)`
 
 const MotionTitle = styled(motion.div)`
   color: ${grayscale[90]};
-  font-size: ${typography.title.medium.fontSize}px;
-  font-weight: ${typography.title.medium.fontWeight};
-  line-height: ${typography.title.medium.lineHeight};
+  ${applyTypography('title.medium')}
   margin-bottom: 32px;
 `;
 
@@ -188,14 +186,13 @@ const Section = styled.div`
 
 const Label = styled.div`
   color: ${grayscale[100]};
-  font-size: ${typography.body.medium.fontSize}px;
-  font-weight: ${typography.body.medium.fontWeight};
+  ${applyTypography('body.medium')}
   margin-bottom: 8px;
 `;
 
 const SubLabel = styled.div`
   color: ${grayscale[50]};
-  font-size: ${typography.body.small.fontSize}px;
+  ${applyTypography('body.small')}
   margin-bottom: 15px;
 `;
 
@@ -210,17 +207,11 @@ const TransportBtn = styled.button<{ selected: boolean }>`
   align-items: center;
   justify-content: center;
   height: 46px;
-  border: 1px solid
-    ${({ selected}) => (selected ? primary[20] : grayscale[60])};
+  border: 1px solid ${({ selected}) => (selected ? primary[20] : grayscale[60])};
   border-radius: 8px;
-  background: ${({ selected }) =>
-    selected ? `${primary[20]}20` : '#fff'};
-  color: ${({ selected }) =>
-    selected ? primary[50] : grayscale[50]};
-  font-size: ${typography.body.small.fontSize}px;
-  font-weight: ${typography.body.small.fontWeight};
-  line-height: ${typography.body.small.lineHeight};
-  letter-spacing: ${typography.body.small.letterSpacing}px;
+  background: ${({ selected }) => selected ? `${primary[20]}20` : '#fff'};
+  color: ${({ selected }) => selected ? primary[30] : grayscale[50]};
+  ${applyTypography('body.small')}
   cursor: pointer;
   transition: border 0.2s, background 0.2s;
 `;
@@ -243,10 +234,7 @@ const NameInput = styled.input`
   padding: 16px;
   border: 1px solid ${grayscale[60]};
   border-radius: 8px;
-  font-size: ${typography.body.small.fontSize}px;
-  font-weight: ${typography.body.small.fontWeight};
-  line-height: ${typography.body.small.lineHeight};
-  letter-spacing: ${typography.body.small.letterSpacing}px;
+  ${applyTypography('body.small')}
   color: ${grayscale[100]};
   background: #fff;
   box-sizing: border-box;
@@ -265,36 +253,6 @@ const SubmitBtn = styled.button`
   width: 100%;
   height: 50px;
   margin-top: 4px;
-  background: ${grayscale[50]};
-  color: #fff;
-  font-size: ${typography.label.medium.fontSize}px;
-  font-weight: ${typography.label.medium.fontWeight};
-  line-height: ${typography.label.medium.lineHeight};
-  letter-spacing: ${typography.label.medium.letterSpacing}px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: ${({ disabled }) =>
-    disabled ? grayscale[40] : primary[30]};
-`;
-
-const NextInputBtn = styled.button`
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: ${grayscale[50]};
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  &:disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
-`; 
+  ${button.Primary}
+  ${applyTypography('label.medium')}
+  `;

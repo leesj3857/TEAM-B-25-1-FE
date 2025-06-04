@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { primary } from '../../../styles/colors/primary';
 import { secondary } from '../../../styles/colors/secondary';
-import { typography } from '../../../styles/typography';
+import { typography, applyTypography } from '../../../styles/typography';
+import { button } from '../../../styles/button';
 import Emoji from '../../../interface/Emoji';
 
 interface Step2Props {
@@ -55,9 +56,7 @@ const HeaderRow = styled.div`
 
 const Title = styled.div`
   color: ${grayscale[90]};
-  font-size: ${typography.title.medium.fontSize}px;
-  font-weight: ${typography.title.medium.fontWeight};
-  line-height: ${typography.title.medium.lineHeight};
+  ${applyTypography('title.medium')}
   display: flex;
   align-items: center;
   gap: 8px;
@@ -65,9 +64,7 @@ const Title = styled.div`
 
 const SubTitle = styled.div`
   color: ${grayscale[100]};
-  font-size: ${typography.body.small.fontSize}px;
-  font-weight: 400;
-  line-height: ${typography.body.small.lineHeight};
+  ${applyTypography('body.small')}
   margin-bottom: 40px;
 `;
 
@@ -90,7 +87,6 @@ const Input = styled.input`
   border-radius: 8px;
   border: 1px solid ${grayscale[60]};
   font-size: 16px;
-  // font-size: ${typography.body.small.fontSize}px;
   color: ${grayscale[100]};
   transition: border 0.2s;
   &:focus {
@@ -112,29 +108,13 @@ const ButtonRow = styled.div`
 const PrevButton = styled.button`
   flex: 1;
   height: 50px;
-  background: ${secondary[5]};
-  color: ${secondary[50]};
-  font-size: ${typography.title.small.fontSize}px;
-  font-weight: ${typography.title.small.fontWeight};
-  line-height: ${typography.title.small.lineHeight};
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  ${button.Secondary}
+  ${applyTypography('title.small')}
 `;
 
 const NextButton = styled.button`
   flex: 1;
   height: 50px;
-  background: ${primary[30]};
-  color: #fff;
-  font-size: ${typography.title.small.fontSize}px;
-  font-weight: ${typography.title.small.fontWeight};
-  line-height: ${typography.title.small.lineHeight};
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
-  background: ${({ disabled }) =>
-    disabled ? grayscale[40] : primary[30]};
-  transition: background 0.2s, opacity 0.2s;
+  ${button.Primary}
+  ${applyTypography('title.small')}
 `;

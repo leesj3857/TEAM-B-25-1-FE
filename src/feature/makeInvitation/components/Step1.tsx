@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { primary } from '../../../styles/colors/primary';
 import { secondary } from '../../../styles/colors/secondary';
-import { typography } from '../../../styles/typography';
+import { applyTypography } from '../../../styles/typography';
+import { button } from '../../../styles/button';
 import Emoji from '../../../interface/Emoji';
 
 interface Step1Props {
@@ -16,14 +17,12 @@ const CARD_LIST = [
     icon: '🍺',
     title: '친목',
     desc: '먹고 놀고 떠들고',
-    color: primary[20],
   },
   {
     key: 'project',
     icon: '💻',
     title: '프로젝트',
     desc: '회의하고, 공부하고',
-    color: primary[20],
   },
 ];
 
@@ -49,7 +48,6 @@ export default function Step1({ onNext }: Step1Props) {
           <SelectCard
             key={card.key}
             selected={selected === card.key}
-            color={card.color}
             onClick={() => setSelected(card.key)}
           >
             <CardEmoji>{card.icon}</CardEmoji>
@@ -84,9 +82,7 @@ const HeaderRow = styled.div`
 
 const Title = styled.div`
   color: ${grayscale[90]};
-  font-size: ${typography.title.medium.fontSize}px;
-  font-weight: ${typography.title.medium.fontWeight};
-  line-height: ${typography.title.medium.lineHeight};
+  ${applyTypography('title.medium')}
   display: flex;
   align-items: center;
   gap: 8px;
@@ -94,9 +90,7 @@ const Title = styled.div`
 
 const SubTitle = styled.div`
   color: ${grayscale[100]};
-  font-size: ${typography.body.small.fontSize}px;
-  font-weight: 400;
-  line-height: ${typography.body.small.lineHeight};
+  ${applyTypography('body.small')}
   margin-bottom: 40px;
 `;
 
@@ -107,15 +101,15 @@ const CardList = styled.div`
   width: 100%;
 `;
 
-const SelectCard = styled.div<{ selected: boolean; color: string }>`
+const SelectCard = styled.div<{ selected: boolean }>`
   display: flex;
   align-items: center;
   border: 1px solid
-    ${({ selected, color }) => (selected ? color : grayscale[60])};
+    ${({ selected }) => (selected ? primary[20] : grayscale[50])};
   border-radius: 8px;
   padding: 24px;
-  background: ${({ selected, color }) =>
-    selected ? color + '20' : '#fff'};
+  background: ${({ selected }) =>
+    selected ? primary[5] : '#fff'};
   height: 80px;
   cursor: pointer;
   transition: border 0.2s, background 0.2s;
@@ -134,34 +128,20 @@ const CardEmoji = styled(Emoji)`
 
 const CardTitle = styled.div<{ selected: boolean }>`
   color: ${({ selected }) =>
-    selected ? primary[50] : grayscale[70]};
-  font-size: ${typography.title.medium.fontSize}px;
-  font-weight: ${typography.title.medium.fontWeight};
-  line-height: ${typography.title.medium.lineHeight};
+    selected ? primary[30] : grayscale[70]};
+  ${applyTypography('title.medium')}
 `;
 
 const CardDesc = styled.div<{ selected: boolean }>`
   color: ${({ selected }) =>
-    selected ? primary[50] : grayscale[60]};
-  font-size: ${typography.body.small.fontSize}px;
-  font-weight: ${typography.body.small.fontWeight};
-  line-height: ${typography.body.small.lineHeight};
+    selected ? primary[30] : grayscale[60]};
+  ${applyTypography('body.small')}
 `;
 
 const NextButton = styled.button`
   width: 100%;
   height: 50px;
   margin-top: 40px;
-  background: ${primary[30]};
-  color: #fff;
-  font-size: ${typography.title.small.fontSize}px;
-  font-weight: ${typography.title.small.fontWeight};
-  line-height: ${typography.title.small.lineHeight};
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
-  background: ${({ disabled }) =>
-    disabled ? grayscale[40] : primary[30]};
-  transition: all 0.2s ease;
+  ${button.Primary}
+  ${applyTypography('title.small')}
 `;

@@ -19,9 +19,9 @@ export default function ReplyInvitation({ invitationId }: { invitationId: string
         ));
     };
     return (
-        <div>
-        <ProgressBar steps={steps} />
-        <ReplyForm invitationId={invitationId} handleNext={handleNext}/>
+        <div style={{padding: '24px 0'}}>
+            <ProgressBar steps={steps} />
+            <ReplyForm invitationId={invitationId} handleNext={handleNext}/>
         </div>
     );
 }

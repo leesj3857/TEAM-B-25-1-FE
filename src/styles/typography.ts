@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+
 export const typography = {
   heading: {
     large:   { fontSize: 40, fontWeight: 700, lineHeight: '150%', letterSpacing: 1 },
@@ -23,4 +25,30 @@ export const typography = {
     small:   { fontSize: 15, fontWeight: 400, lineHeight: '150%', letterSpacing: 0 },
     xsmall:  { fontSize: 13, fontWeight: 400, lineHeight: '150%', letterSpacing: 0 },
   },
+} as const;
+
+type TypographyCategory = keyof typeof typography;
+type HeadingSize = keyof typeof typography.heading;
+type TitleSize = keyof typeof typography.title;
+type BodySize = keyof typeof typography.body;
+type LabelSize = keyof typeof typography.label;
+
+type TypographyStyle = 
+  | `heading.${HeadingSize}`
+  | `title.${TitleSize}`
+  | `body.${BodySize}`
+  | `label.${LabelSize}`;
+
+type TypographySize = HeadingSize | TitleSize | BodySize | LabelSize;
+
+export const applyTypography = (style: TypographyStyle) => {
+  const [category, size] = style.split('.') as [TypographyCategory, string];
+  const typographyStyle = typography[category][size as keyof typeof typography[typeof category]];
+  
+  return css`
+    font-size: ${typographyStyle.fontSize}px;
+    font-weight: ${typographyStyle.fontWeight};
+    line-height: ${typographyStyle.lineHeight};
+    letter-spacing: ${typographyStyle.letterSpacing}px;
+  `;
 }; 

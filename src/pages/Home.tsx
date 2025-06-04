@@ -1,14 +1,15 @@
 import styled from '@emotion/styled';
-import { typography } from '../styles/typography';
+import { typography, applyTypography } from '../styles/typography';
 import { grayscale } from '../styles/colors/grayscale';
 import { primary } from '../styles/colors/primary';
 import { useNavigate } from 'react-router-dom';
+import { button } from '../styles/button';
 
 const Home = () => {
   const navigate = useNavigate();
   return (
     <Container>
-      <Heading>우리 어디서 만날까?</Heading>
+      <Heading>어디서 만날지 고민 될 땐?</Heading>
       <LogoRow>
       <svg width="136" height="32" viewBox="0 0 136 32" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M57.5266 0H65.4424V32H57.5266V0ZM43.8424 24.4211H54.7056V30.7368H35.9688V0.421053H53.8635V6.73684H43.8424V24.4211Z" fill="#5E52FF"/>
@@ -18,6 +19,7 @@ const Home = () => {
       </svg>
       </LogoRow>
       <CharacterImg src="/logo_v1.webp" alt="캐릭터" />
+      <ShadowBox></ShadowBox>
       <Description>
         초대장을 만들어서<br />
         친구들에게 공유해보세요
@@ -40,12 +42,9 @@ const Container = styled.div`
 
 const Heading = styled.div`
   margin-top: 48px;
-  margin-bottom: 8px;
+  margin-bottom: 20px;
   color: ${primary[30]};
-  font-size: ${typography.heading.small.fontSize}px;
-  font-weight: ${typography.heading.small.fontWeight};
-  line-height: ${typography.heading.small.lineHeight};
-  letter-spacing: ${typography.heading.small.letterSpacing}px;
+  ${applyTypography('title.large')}
   text-align: center;
 `;
 
@@ -53,35 +52,25 @@ const LogoRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 24px;
-`;
-
-const LogoText = styled.span`
-  font-size: 30px;
-  font-weight: 700;
-  color: ${grayscale[80]};
-`;
-
-const LogoGo = styled.span`
-  font-size: 30px;
-  font-weight: 700;
-  color: ${grayscale[40]};
-  background: ${grayscale[10]};
-  border-radius: 12px;
-  padding: 0 8px;
 `;
 
 const CharacterImg = styled.img`
-  width: 60%;
-  max-width: 400px;
-  margin: 0px 0 32px 0;
+  width: 150px;
+  margin: 70px 0 0px;
+`;
+
+const ShadowBox = styled.div`
+  width: 91px;
+  height: 14px;
+  background-color: #CEC8FF;
+  opacity: 0.4;
+  border-radius: 50%;
+  margin: 22px auto;
 `;
 
 const Description = styled.div`
   color: ${grayscale[50]};
-  font-size: ${typography.body.large.fontSize}px;
-  font-weight: ${typography.body.large.fontWeight};
-  line-height: ${typography.body.large.lineHeight};
+  ${applyTypography('body.large')}
   text-align: center;
   margin-bottom: 40px;
 `;
@@ -89,19 +78,7 @@ const Description = styled.div`
 const Button = styled.button`
   width: 260px;
   height: 55px;
-  background: ${primary[30]};
-  color: #fff;
-  font-size: ${typography.label.large.fontSize}px;
-  font-weight: ${typography.label.large.fontWeight};
-  line-height: ${typography.label.large.lineHeight};
-  letter-spacing: ${typography.label.large.letterSpacing}px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
   margin-bottom: 48px;
-  box-shadow: none;
-  transition: background 0.2s;
-  &:hover {
-    background: ${primary[40]};
-  }
+  ${button.Primary}
+  ${applyTypography('label.large')}
 `;
