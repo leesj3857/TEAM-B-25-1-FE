@@ -1,6 +1,6 @@
 import Lottie from 'lottie-react';
 import styled from '@emotion/styled';
-import fetchingAnimation from '../../../../public/animation/fetching.json';
+import fetchingAnimation from '../../../../public/animation/fetching_v1.json';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { typography } from '../../../styles/typography';
 
