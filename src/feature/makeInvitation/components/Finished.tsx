@@ -7,25 +7,45 @@ import { Icon } from '@mdi/react';
 import { useState } from 'react';
 import SuccessToastUI from '../../../interface/SucessToastUI';
 import Emoji from '../../../interface/Emoji';
+import FetchingAnimation from '../interface/fetchingAnimation';  
+import { button } from '../../../styles/button';
+import { useEffect } from 'react';
 
 export default function Finished() {
   const [showToast, setShowToast] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  function shareKakaoWithTemplate(linkUrl: string, templateId: number) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 4000); // 3초간 애니메이션
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const shareKakaoWithTemplate = (templateId: number) => {
     if (window.Kakao) {
       window.Kakao.Link.sendCustom({
         templateId: templateId, // 빌더에서 복사한 템플릿ID (숫자)
         templateArgs: {
-          // 템플릿에서 변수로 지정한 값이 있다면 여기에 key-value로 전달
-          linkUrl: linkUrl,
-          // 예시: title: '초대장이 도착했어요!'
+          invitationId: 1,
         }
       });
     }
   }
 
+
+  const handleCopy = () => {
+    setShowToast(true);
+    navigator.clipboard.writeText('http://3.139.88.251/reply/1');
+  }
+
   return (
     <Container>
+      {isLoading ? (
+        <FetchingAnimation />
+      ) : (
+        <>
       <HeaderRow>
         <Title>
           초대장이 발급되었어요 ! <Emoji>🥳</Emoji>
@@ -36,13 +56,11 @@ export default function Finished() {
       </HeaderRow>
       <CenterImg src="/make_invitation/finished_v1.webp" alt="완료 캐릭터" />
       <ButtonList>
-        <CopyButton  onClick={() => {
-            setShowToast(true);
-          }}>
+        <CopyButton onClick={handleCopy}>
           <Icon path={mdiContentCopy} size={0.9} color={secondary[70]} />
           <CopyText>링크 복사하기</CopyText>
         </CopyButton>
-        <KakaoButton onClick={() => shareKakaoWithTemplate('https://www.google.com', 120740)}>
+        <KakaoButton onClick={() => shareKakaoWithTemplate(120740)}>
           <KakaoIcon src="/make_invitation/kakaotalk_v1.webp" alt="카카오톡" />
           <KakaoText>카카오톡으로 공유하기</KakaoText>
         </KakaoButton>
@@ -50,8 +68,10 @@ export default function Finished() {
       <SuccessToastUI
         text="링크 복사가 완료되었어요!"
         show={showToast}
-        onClose={() => setShowToast(false)}
-      />
+          onClose={() => setShowToast(false)}
+        />
+      </>
+      )}
     </Container>
   );
 }
@@ -112,14 +132,11 @@ const CopyButton = styled.button`
   width: 100%;
   height: 50px;
   padding: 13px 0;
-  border-radius: 8px;
-  border: 1px solid ${secondary[60]};
-  background: #fff;
+  ${button.Tertiary}
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  cursor: pointer;
 `;
 
 

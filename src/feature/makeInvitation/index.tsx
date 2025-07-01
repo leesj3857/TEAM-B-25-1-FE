@@ -4,11 +4,13 @@ import { ProcessStep } from './type/processStep';
 import { handleNext as handleNextOrig, handlePrev as handlePrevOrig } from './utils/progress/handleProgress';
 import Step1 from './components/Step1';
 import Step2 from './components/Step2';
+import Step3 from './components/Step3';
 import Finished from './components/Finished';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const stepsInit: ProcessStep[] = [
   { status: 'active' },
+  { status: 'todo' },
   { status: 'todo' },
   { status: 'todo' },
 ];
@@ -78,9 +80,23 @@ const MakeInvitation = () => {
             <Step2 onNext={handleNext} onPrev={handlePrev} />
           </motion.div>
         )}
+
         {current === 2 && (
           <motion.div
             key={2}
+            custom={direction}
+            variants={slideVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Step3 onNext={handleNext} onPrev={handlePrev} />
+          </motion.div>
+        )}
+
+        {current === 3 && (
+          <motion.div
+            key={3}
             custom={direction}
             variants={slideVariants}
             initial="initial"

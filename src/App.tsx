@@ -1,7 +1,8 @@
 // src/App.tsx
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import MakeInvitationPage from './pages/MakeInvitation';
+import ReplyInvitationPage from './pages/ReplyInvitation';
 import { useEffect } from 'react';
 
 function App() {
@@ -15,7 +16,9 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/make-invitation" element={<MakeInvitationPage />} />
+        <Route path="/make" element={<MakeInvitationPage />} />
+        <Route path="/reply/:invitationId" element={<ReplyInvitationPage />} />
+        <Route path="/reply" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );
