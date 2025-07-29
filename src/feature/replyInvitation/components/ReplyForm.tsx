@@ -14,34 +14,85 @@ const TRANSPORTS = [
   { key: 'car', label: '자동차', icon: <Icon path={mdiCar} size={1} /> },
 ];
 
-export default function ReplyForm({ invitationId, handleNext }: { invitationId: string | undefined, handleNext: () => void }) {
-  const [transport, setTransport] = useState<string | null>(null);
-  const [address, setAddress] = useState('');
-  const [name, setName] = useState('');
+export default function ReplyForm({ 
+  invitationId, 
+  handleNext, 
+  userInfo, 
+  updateUserInfo, 
+  onComplete 
+}: { 
+  invitationId: string | undefined, 
+  handleNext: () => void,
+  userInfo?: {
+    name?: string;
+    address?: string;
+    transport?: string;
+    step?: number;
+  },
+  updateUserInfo?: (newInfo: Partial<{
+    name?: string;
+    address?: string;
+    transport?: string;
+    step?: number;
+  }>) => void,
+  onComplete?: () => void
+}) {
+  const [transport, setTransport] = useState<string | null>(userInfo?.transport || null);
+  const [address, setAddress] = useState(userInfo?.address || '');
+  const [name, setName] = useState(userInfo?.name || '');
   const [showTitle, setShowTitle] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(userInfo?.step || 0);
   const transportRowRef = useRef<HTMLDivElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
-
 
   useEffect(() => {
     setShowTitle(true);
     const t2 = setTimeout(() => setShowForm(true), 800);
     return () => clearTimeout(t2);
   }, []);
-
+  
+  useEffect(() => {
+    if (userInfo) {
+      setTransport(userInfo.transport || null);
+      setAddress(userInfo.address || '');
+      setName(userInfo.name || '');
+      setStep(userInfo.step || 0);
+    }
+  }, [userInfo]);
+  
   const handleAddressNext = (display: string) => {
     if (display.trim().length > 0 && step === 1) {
+      if (updateUserInfo) {
+        updateUserInfo({ address: display, step: 2 });
+      }
       handleNext();
       setStep(2);
     }
   };
+  
   const handleNameNext = () => {
     if (name.trim().length > 0 && step === 0) {
+      if (updateUserInfo) {
+        updateUserInfo({ name: name, step: 1 });
+      }
       handleNext();
       setStep(1);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (updateUserInfo) {
+      updateUserInfo({ 
+        name: name,
+        address: address,
+        transport: transport || undefined,
+        step: step
+      });
+    }
+    if (onComplete) {
+      onComplete();
     }
   };
 
@@ -147,7 +198,10 @@ export default function ReplyForm({ invitationId, handleNext }: { invitationId: 
                 </motion.div>
               </AnimatePresence>
             </div>
-            <SubmitBtn disabled={!(step === 2 && transport && address && name)}>
+            <SubmitBtn 
+              disabled={!(step === 2 && transport && address && name)}
+              onClick={handleSubmit}
+            >
               모임 장소 확인하기
             </SubmitBtn>
           </motion.div>

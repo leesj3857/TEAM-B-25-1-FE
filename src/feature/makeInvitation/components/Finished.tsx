@@ -11,17 +11,24 @@ import FetchingAnimation from '../interface/fetchingAnimation';
 import { button } from '../../../styles/button';
 import { useEffect } from 'react';
 
-export default function Finished() {
+export default function Finished({ onComplete }: { onComplete?: () => void }) {
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 4000); // 3초간 애니메이션
+    }, 4000); // 4초간 애니메이션
 
     return () => clearTimeout(timer);
   }, []);
+
+  // 완료 시 onComplete 호출
+  useEffect(() => {
+    if (!isLoading && onComplete) {
+      onComplete();
+    }
+  }, [isLoading, onComplete]);
 
   const shareKakaoWithTemplate = (templateId: number) => {
     if (window.Kakao) {
@@ -34,11 +41,16 @@ export default function Finished() {
     }
   }
 
-
   const handleCopy = () => {
     setShowToast(true);
     navigator.clipboard.writeText('http://3.139.88.251/reply/1');
   }
+
+  const handleComplete = () => {
+    if (onComplete) {
+      onComplete();
+    }
+  };
 
   return (
     <Container>

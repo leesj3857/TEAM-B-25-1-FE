@@ -16,22 +16,55 @@ const TRANSPORTS = [
   { key: 'car', label: '자동차', icon: <Icon path={mdiCar} size={1} /> },
 ];
 
-export default function Step3({ onNext, onPrev }: { onNext: () => void, onPrev: () => void }) {
-  const [transport, setTransport] = useState<string | null>(null);
-  const [address, setAddress] = useState('');
-  const [name, setName] = useState('');
-  const [step, setStep] = useState(0);
-
+export default function Step3({ onNext, onPrev, userInfo, updateUserInfo }: { 
+  onNext: () => void, 
+  onPrev: () => void,
+  userInfo?: {
+    purpose?: string;
+    name?: string;
+    address?: string;
+    hostName?: string;
+    transport?: string;
+    step3Step?: number;
+  },
+  updateUserInfo?: (newInfo: Partial<{
+    purpose?: string;
+    name?: string;
+    address?: string;
+    hostName?: string;
+    transport?: string;
+    step3Step?: number;
+  }>) => void
+}) {
+  const [transport, setTransport] = useState<string | null>(userInfo?.transport || null);
+  const [address, setAddress] = useState(userInfo?.address || '');
+  const [name, setName] = useState(userInfo?.hostName || '');
+  const [step, setStep] = useState(userInfo?.step3Step || 0);
 
   const handleAddressNext = (display: string) => {
-    if (display.trim().length > 0 && step === 1) {
+    if (display.trim().length > 0 && step === 1 && updateUserInfo) {
+      updateUserInfo({ address: display, step3Step: 2 });
       setStep(2);
     }
   };
+  
   const handleNameNext = () => {
-    if (name.trim().length > 0 && step === 0) {
+    if (name.trim().length > 0 && step === 0 && updateUserInfo) {
+      updateUserInfo({ hostName: name, step3Step: 1 });
       setStep(1);
     }
+  };
+
+  const handleNext = () => {
+    if (updateUserInfo) {
+      updateUserInfo({ 
+        address: address,
+        hostName: name,
+        transport: transport || undefined,
+        step3Step: step
+      });
+    }
+    onNext();
   };
 
   return (
@@ -116,7 +149,7 @@ export default function Step3({ onNext, onPrev }: { onNext: () => void, onPrev: 
             </div>
             <ButtonRow>
               <PrevButton onClick={onPrev}>이전</PrevButton>
-              <NextButton onClick={onNext} disabled={!(step === 2 && transport && address && name)}>다음</NextButton>
+              <NextButton onClick={handleNext} disabled={!(step === 2 && transport && address && name)}>다음</NextButton>
             </ButtonRow>
           </div>
     </Container>
