@@ -24,7 +24,7 @@ export default function BottomSheet({mode, setMode}: {mode: 'hide' | 'half' | 'f
 
   // 터치 시작
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
+    // e.preventDefault();
     setIsDragging(true);
     setStartY(e.touches[0].clientY);
     setCurrentY(e.touches[0].clientY);
@@ -35,7 +35,7 @@ export default function BottomSheet({mode, setMode}: {mode: 'hide' | 'half' | 'f
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isDragging) return;
     
-    e.preventDefault();
+    // e.preventDefault();
     const currentTouchY = e.touches[0].clientY;
     setCurrentY(currentTouchY);
     
@@ -112,7 +112,12 @@ export default function BottomSheet({mode, setMode}: {mode: 'hide' | 'half' | 'f
         >
           <div />
         </SlideBar>
-        <CategoryContainer>
+        <CategoryContainer 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ touchAction: 'none' }}
+        >
             <CategoryItem selected={selectedCategory === '맛집'} onClick={() => setSelectedCategory('맛집')}>
                 <Icon path={mdiSilverwareForkKnife} size={0.9} color={selectedCategory === '맛집' ? primary[30] : grayscale[70]} />
                 <span>맛집</span>
