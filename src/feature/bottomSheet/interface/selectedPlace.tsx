@@ -126,7 +126,14 @@ const Vote = styled.div`
 const VoteButton = styled.button<{isVoted: boolean}>`
     width: 100%;
     height: 50px;
-    ${button.Secondary}
+    background-color: ${secondary[5]};
+    border: 1px solid ${secondary[10]};
+    color: ${secondary[50]};
+    ${applyTypography('label.medium')}
+    border-radius: 8px;
+    box-shadow: none;
+    transition: background-color 0.2s;
+    cursor: pointer;
     ${({isVoted}) => isVoted && css`
         background-color: ${secondary[40]};
         color: ${grayscale[0]};
@@ -135,9 +142,9 @@ const VoteButton = styled.button<{isVoted: boolean}>`
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     svg {
-        margin-bottom: 2px;
+        margin-bottom: 1px;
     }
 `;  
 
