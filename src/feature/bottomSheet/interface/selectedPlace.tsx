@@ -17,6 +17,7 @@ export default function SelectedPlace({name, rating, time, onClickVote, onClose}
 
     // 터치 시작
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
+        e.preventDefault();
         setIsDragging(true);
         setStartY(e.touches[0].clientY);
         setCurrentY(e.touches[0].clientY);
@@ -27,6 +28,7 @@ export default function SelectedPlace({name, rating, time, onClickVote, onClose}
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
         if (!isDragging) return;
         
+        e.preventDefault();
         const currentTouchY = e.touches[0].clientY;
         setCurrentY(currentTouchY);
         
@@ -41,9 +43,10 @@ export default function SelectedPlace({name, rating, time, onClickVote, onClose}
     }, [isDragging, startY]);
 
     // 터치 종료
-    const handleTouchEnd = useCallback(() => {
+    const handleTouchEnd = useCallback((e: React.TouchEvent) => {
         if (!isDragging) return;
         
+        e.preventDefault();
         setIsDragging(false);
         const diffY = currentY - startY;
         const threshold = 100; // 50px 이상 드래그하면 닫기
@@ -62,6 +65,7 @@ export default function SelectedPlace({name, rating, time, onClickVote, onClose}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            style={{ touchAction: 'none' }}
         >
             <PlaceInfo>
                 <Image>
