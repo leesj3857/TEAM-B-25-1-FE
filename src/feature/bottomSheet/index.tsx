@@ -16,15 +16,34 @@ export default function BottomSheet({mode, setMode}: {mode: 'hide' | 'half' | 'f
   const [translateY, setTranslateY] = useState(0);
   const slideBarRef = useRef<HTMLDivElement>(null);
   const [selectedPlace, setSelectedPlace] = useState<{name: string, rating: number, time: number} | null>(null);
-  
+  const touchStartTime = useRef<number>(0);
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+
+  const handleItemTouchStart = (e: React.TouchEvent) => {
+    touchStartTime.current = Date.now();
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleItemTouchEnd = (e: React.TouchEvent, category: string) => {
+    const timeDiff = Date.now() - touchStartTime.current;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const moveX = Math.abs(endX - touchStartX.current);
+    const moveY = Math.abs(endY - touchStartY.current);
+
+    if (timeDiff < 200 && moveX < 10 && moveY < 10) {
+      setSelectedCategory(category);
+    }
+  };
   const onClickPlace = (place: {name: string, rating: number, time: number}) => {
+    console.log('onClickPlace', place);
     setSelectedPlace(place);
     setMode('hide');
   }
 
-  // 터치 시작
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    // e.preventDefault();
     setIsDragging(true);
     setStartY(e.touches[0].clientY);
     setCurrentY(e.touches[0].clientY);
@@ -35,7 +54,6 @@ export default function BottomSheet({mode, setMode}: {mode: 'hide' | 'half' | 'f
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isDragging) return;
     
-    // e.preventDefault();
     const currentTouchY = e.touches[0].clientY;
     setCurrentY(currentTouchY);
     
@@ -54,7 +72,6 @@ export default function BottomSheet({mode, setMode}: {mode: 'hide' | 'half' | 'f
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     if (!isDragging) return;
     
-    e.preventDefault();
     setIsDragging(false);
     const diffY = currentY - startY;
     const threshold = 100;
@@ -118,12 +135,12 @@ export default function BottomSheet({mode, setMode}: {mode: 'hide' | 'half' | 'f
           onTouchEnd={handleTouchEnd}
           style={{ touchAction: 'none' }}
         >
-            <CategoryItem selected={selectedCategory === '맛집'} onClick={() => setSelectedCategory('맛집')}>
+            <CategoryItem selected={selectedCategory === '맛집'} onClick={() => setSelectedCategory('맛집')} onTouchStart={handleItemTouchStart} onTouchEnd={(e) => handleItemTouchEnd(e, '맛집')}>
                 <Icon path={mdiSilverwareForkKnife} size={0.9} color={selectedCategory === '맛집' ? primary[30] : grayscale[70]} />
                 <span>맛집</span>
             </CategoryItem>
             <CategoryDivider />
-            <CategoryItem selected={selectedCategory === '놀거리'} onClick={() => setSelectedCategory('놀거리')}>
+            <CategoryItem selected={selectedCategory === '놀거리'} onClick={() => setSelectedCategory('놀거리')} onTouchStart={handleItemTouchStart} onTouchEnd={(e) => handleItemTouchEnd(e, '놀거리')}>
                 <Icon path={mdiTicket} size={0.9} color={selectedCategory === '놀거리' ? primary[30] : grayscale[70]} />
                 <span>놀거리</span>
             </CategoryItem>
@@ -180,6 +197,7 @@ const ListButton = styled.button`
 
 const ListButtonText = styled.span`
   ${applyTypography('label.small')}
+  color: ${grayscale[80]};
 `;
 
 const SlideBar = styled.div`
