@@ -10,18 +10,32 @@ import Emoji from '../../../interface/Emoji';
 import FetchingAnimation from '../interface/fetchingAnimation';  
 import { button } from '../../../styles/button';
 import { useEffect } from 'react';
+import { createMeeting, Meeting } from '../../../api';
 
-export default function Finished({ onComplete }: { onComplete?: () => void }) {
+interface UserInfo {
+  purpose?: string;
+  name?: string;
+  address?: string;
+  hostName?: string;
+  transport?: string;
+  step3Step?: number;
+}
+
+export default function Finished({ onComplete, userInfo }: { onComplete?: () => void, userInfo: UserInfo }) {
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [meeting, setMeeting] = useState<Meeting | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000); // 4초간 애니메이션
-
-    return () => clearTimeout(timer);
-  }, []);
+    if (userInfo.purpose && userInfo.name) {
+      createMeeting({
+        name: userInfo.name,
+        purpose: userInfo.purpose
+      }).then((res) => {
+        setMeeting(res.data);
+      });
+    }
+  }, [userInfo]);
 
   // 완료 시 onComplete 호출
   useEffect(() => {

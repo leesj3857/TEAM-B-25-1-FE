@@ -8,6 +8,7 @@ import Step3 from './components/Step3';
 import Finished from './components/Finished';
 import AlertModal from '../../interface/alertModal';
 import { AnimatePresence, motion } from 'framer-motion';
+import { createMeeting } from '../../api';
 
 const stepsInit: ProcessStep[] = [
   { status: 'active' },
@@ -197,7 +198,7 @@ const MakeInvitation = () => {
             animate="animate"
             exit="exit"
           >
-            <Finished onComplete={clearSessionStorage} />
+            <Finished onComplete={clearSessionStorage} userInfo={userInfo} />
           </motion.div>
         )}
       </AnimatePresence>
