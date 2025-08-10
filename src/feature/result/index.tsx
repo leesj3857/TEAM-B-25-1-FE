@@ -25,7 +25,7 @@ export default function Result() {
             navigate('/map');
           }
         }}>
-          <Icon path={mdiArrowLeft} size={1.5} /> 
+          <Icon path={mdiArrowLeft} size={1.5} color={grayscale[100]} /> 
         </Back>
         {isEditing && (
           <Title>내 정보 수정</Title>
