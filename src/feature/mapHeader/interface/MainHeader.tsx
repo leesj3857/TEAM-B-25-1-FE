@@ -4,8 +4,10 @@ import { mdiArrowLeft, mdiVote } from '@mdi/js';
 import { grayscale } from "../../../styles/colors/grayscale";
 import { applyTypography } from "../../../styles/typography";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function MainHeader({name, line}: {name: string, line: string[]}) {
+    const navigate = useNavigate();
 
     const lineColor = {
         '1': '#0052A4',
@@ -39,7 +41,9 @@ export default function MainHeader({name, line}: {name: string, line: string[]})
                 ))}
                 <span>{name}</span>
             </Station>
-            <Vote>
+            <Vote onClick={() => {
+                navigate('/result');
+            }}>
                 <Icon path={mdiVote} size={1.2} />
                 <span>투표함</span>
             </Vote>

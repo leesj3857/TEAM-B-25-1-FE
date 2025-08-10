@@ -22,7 +22,7 @@ export default function AddressInputWithDropdown({
   disabled,
 }: AddressInputWithDropdownProps) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isSelected, setIsSelected] = useState(false);
+  const [isSelected, setIsSelected] = useState(value.trim().length > 0);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
   // 주소 검색 쿼리

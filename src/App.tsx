@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import MakeInvitationPage from './pages/MakeInvitation';
 import ReplyInvitationPage from './pages/ReplyInvitation';
 import Map from './pages/Map';
+import ResultPage from './pages/Result';
 import { useEffect } from 'react';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/reply/:invitationId" element={<ReplyInvitationPage />} />
         <Route path="/reply" element={<Navigate to="/" replace />} />
         <Route path="/map" element={<Map />} />
+        <Route path="/result" element={<ResultPage />} />
       </Routes>
     </div>
   );

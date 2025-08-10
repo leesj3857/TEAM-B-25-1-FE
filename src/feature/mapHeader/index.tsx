@@ -10,7 +10,7 @@ export default function MapHeader({mode}: {mode: 'hide' | 'half' | 'full'}) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsIntroVisible(false);
-        }, 3000);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, []);
