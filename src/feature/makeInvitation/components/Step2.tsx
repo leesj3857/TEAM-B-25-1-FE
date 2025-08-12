@@ -10,10 +10,33 @@ import Emoji from '../../../interface/Emoji';
 interface Step2Props {
   onNext: () => void;
   onPrev: () => void;
+  userInfo?: {
+    purpose?: string;
+    name?: string;
+    address?: string;
+    hostName?: string;
+    transport?: string;
+    step3Step?: number;
+  };
+  updateUserInfo?: (newInfo: Partial<{
+    purpose?: string;
+    name?: string;
+    address?: string;
+    hostName?: string;
+    transport?: string;
+    step3Step?: number;
+  }>) => void;
 }
 
-export default function Step2({ onNext, onPrev }: Step2Props) {
-  const [input, setInput] = useState('');
+export default function Step2({ onNext, onPrev, userInfo, updateUserInfo }: Step2Props) {
+  const [input, setInput] = useState(userInfo?.name || '');
+
+  const handleNext = () => {
+    if (updateUserInfo) {
+      updateUserInfo({ name: input });
+    }
+    onNext();
+  };
 
   return (
     <Container>
@@ -36,7 +59,7 @@ export default function Step2({ onNext, onPrev }: Step2Props) {
       </InputWrap>
       <ButtonRow>
         <PrevButton onClick={onPrev}>이전</PrevButton>
-        <NextButton onClick={onNext} disabled={!input}>다음</NextButton>
+        <NextButton onClick={handleNext} disabled={!input}>다음</NextButton>
       </ButtonRow>
     </Container>
   );

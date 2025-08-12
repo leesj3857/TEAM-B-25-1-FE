@@ -1,10 +1,11 @@
 // src/App.tsx
-import { Routes, Route, Navigate } from "react-router-dom";
-import Home from "./pages/Home";
-import MakeInvitationPage from "./pages/MakeInvitation";
-import ReplyInvitationPage from "./pages/ReplyInvitation";
-import { useEffect } from "react";
-import Map from "./pages/Map";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Home from './pages/Home';
+import MakeInvitationPage from './pages/MakeInvitation';
+import ReplyInvitationPage from './pages/ReplyInvitation';
+import Map from './pages/Map';
+import ResultPage from './pages/Result';
+import { useEffect } from 'react';
 
 function App() {
   useEffect(() => {
@@ -16,11 +17,12 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/make' element={<MakeInvitationPage />} />
-        <Route path='/reply/:invitationId' element={<ReplyInvitationPage />} />
-        <Route path='/map' element={<Map />} />
-        <Route path='/reply' element={<Navigate to='/' replace />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/make" element={<MakeInvitationPage />} />
+        <Route path="/reply/:invitationId" element={<ReplyInvitationPage />} />
+        <Route path="/reply" element={<Navigate to="/" replace />} />
+        <Route path="/map" element={<Map />} />
+        <Route path="/result" element={<ResultPage />} />
       </Routes>
     </div>
   );

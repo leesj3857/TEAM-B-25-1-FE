@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProgressBar } from './interface/ProgressBar';
-import { ProcessStep } from './type/processStep';
+import { ProcessStep, ProcessStepStatus } from './type/processStep';
 import { handleNext as handleNextOrig, handlePrev as handlePrevOrig } from './utils/progress/handleProgress';
 import Step1 from './components/Step1';
 import Step2 from './components/Step2';
 import Step3 from './components/Step3';
 import Finished from './components/Finished';
+import AlertModal from '../../interface/alertModal';
 import { AnimatePresence, motion } from 'framer-motion';
+import { createMeeting } from '../../api';
 
 const stepsInit: ProcessStep[] = [
   { status: 'active' },
@@ -38,22 +40,101 @@ const slideVariants = {
   }),
 };
 
+interface UserInfo {
+  purpose?: string;
+  name?: string;
+  address?: string;
+  hostName?: string;
+  transport?: string;
+  step3Step?: number;
+}
+
+const SESSION_STORAGE_KEY = 'makeInvitation_userInfo';
+
 const MakeInvitation = () => {
   const [steps, setSteps] = useState<ProcessStep[]>(stepsInit);
   const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(1); // 1: next, -1: prev
+  const [direction, setDirection] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfo>({});
+
+  useEffect(() => {
+    const savedInfo = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (savedInfo) {
+      try {
+        const parsedInfo = JSON.parse(savedInfo);
+        setUserInfo(parsedInfo.userInfo || {});
+        
+        if (parsedInfo.current !== undefined && parsedInfo.current > 0) {
+          setShowModal(true);
+        }
+      } catch (error) {
+        console.error('세션스토리지 파싱 오류:', error);
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      }
+    }
+  }, []);
+
+  const updateUserInfo = (newInfo: Partial<UserInfo>) => {
+    const updatedInfo = { ...userInfo, ...newInfo };
+    setUserInfo(updatedInfo);
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
+      userInfo: updatedInfo,
+      current: current,
+      steps: steps
+    }));
+  };
+
+  const clearSessionStorage = () => {
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  };
 
   const handleNext = () => {
     setDirection(1);
     handleNextOrig({ steps, current, setSteps, setCurrent });
+    
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
+      userInfo: userInfo,
+      current: current + 1,
+      steps:  steps.map((_, idx) => {
+        if (idx < current) return { status: 'done' as ProcessStepStatus };
+        if (idx === current) return { status: 'done' as ProcessStepStatus };
+        return { status: 'todo' as ProcessStepStatus };
+      })
+    }));
   };
+
   const handlePrev = () => {
     setDirection(-1);
     handlePrevOrig({ steps, current, setSteps, setCurrent });
+    
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
+      userInfo: userInfo,
+      current: current - 1,
+      steps: steps
+    }));
+  };
+
+  const handleContinue = () => {
+    const savedInfo = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (savedInfo) {
+      const parsedInfo = JSON.parse(savedInfo);
+      setCurrent(parsedInfo.current);
+      setSteps(parsedInfo.steps || stepsInit);
+    }
+    setShowModal(false);
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+    clearSessionStorage();
+    setUserInfo({});
+    setCurrent(0);
+    setSteps(stepsInit);
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', padding: '24px 0', background: '#fff', position: 'relative', minHeight: 500, overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: '100%', padding: '24px', background: '#fff', position: 'relative', minHeight: 500, overflow: 'hidden' }}>
       <ProgressBar steps={steps} />
       <AnimatePresence custom={direction} mode="wait">
         {current === 0 && (
@@ -65,7 +146,11 @@ const MakeInvitation = () => {
             animate="animate"
             exit="exit"
           >
-            <Step1 onNext={handleNext} />
+            <Step1 
+              onNext={handleNext} 
+              userInfo={userInfo}
+              updateUserInfo={updateUserInfo}
+            />
           </motion.div>
         )}
         {current === 1 && (
@@ -77,7 +162,12 @@ const MakeInvitation = () => {
             animate="animate"
             exit="exit"
           >
-            <Step2 onNext={handleNext} onPrev={handlePrev} />
+            <Step2 
+              onNext={handleNext} 
+              onPrev={handlePrev}
+              userInfo={userInfo}
+              updateUserInfo={updateUserInfo}
+            />
           </motion.div>
         )}
 
@@ -90,7 +180,12 @@ const MakeInvitation = () => {
             animate="animate"
             exit="exit"
           >
-            <Step3 onNext={handleNext} onPrev={handlePrev} />
+            <Step3 
+              onNext={handleNext} 
+              onPrev={handlePrev}
+              userInfo={userInfo}
+              updateUserInfo={updateUserInfo}
+            />
           </motion.div>
         )}
 
@@ -103,8 +198,17 @@ const MakeInvitation = () => {
             animate="animate"
             exit="exit"
           >
-            <Finished />
+            <Finished onComplete={clearSessionStorage} userInfo={userInfo} />
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showModal && (
+          <AlertModal 
+            onContinue={handleContinue}
+            onCancel={handleCancel}
+          />
         )}
       </AnimatePresence>
     </div>

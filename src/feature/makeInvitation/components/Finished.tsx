@@ -10,35 +10,71 @@ import Emoji from '../../../interface/Emoji';
 import FetchingAnimation from '../interface/fetchingAnimation';  
 import { button } from '../../../styles/button';
 import { useEffect } from 'react';
+import { createMeeting, Meeting, Participant, registerParticipant } from '../../../api';
 
-export default function Finished() {
+interface UserInfo {
+  purpose?: string;
+  name?: string;
+  address?: string;
+  hostName?: string;
+  transport?: string;
+  step3Step?: number;
+}
+
+export default function Finished({ onComplete, userInfo }: { onComplete?: () => void, userInfo: UserInfo }) {
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [meeting, setMeeting] = useState<Meeting | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000); // 3초간 애니메이션
+    if (userInfo.purpose && userInfo.name) {
+      createMeeting({
+        name: userInfo.name,
+        purpose: userInfo.purpose
+      }).then((res) => {
+        if (res && typeof res === 'object' && 'linkCode' in res) {
+          setMeeting(res as Meeting);
+          registerParticipant(res.linkCode as string, {
+            name: userInfo.name,
+            address: userInfo.address,
+            transportType: userInfo.transport,
+            lat: 0,
+            lng: 0
+          } as Participant);
+          setIsLoading(false);
+        }
+      });
+    }
+  }, [userInfo]);
 
-    return () => clearTimeout(timer);
-  }, []);
+  // 완료 시 onComplete 호출
+  useEffect(() => {
+    if (!isLoading && onComplete) {
+      onComplete();
+    }
+  }, [isLoading, onComplete]);
 
   const shareKakaoWithTemplate = (templateId: number) => {
     if (window.Kakao) {
       window.Kakao.Link.sendCustom({
         templateId: templateId, // 빌더에서 복사한 템플릿ID (숫자)
         templateArgs: {
-          invitationId: 1,
+          invitationId: meeting?.linkCode,
         }
       });
     }
   }
 
-
   const handleCopy = () => {
     setShowToast(true);
-    navigator.clipboard.writeText('http://3.139.88.251/reply/1');
+    navigator.clipboard.writeText(`https://o-digo.com/reply/${meeting?.linkCode}`);
   }
+
+  const handleComplete = () => {
+    if (onComplete) {
+      onComplete();
+    }
+  };
 
   return (
     <Container>

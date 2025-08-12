@@ -9,25 +9,48 @@ import Emoji from '../../../interface/Emoji';
 
 interface Step1Props {
   onNext: () => void;
+  userInfo?: {
+    purpose?: string;
+    name?: string;
+    address?: string;
+    hostName?: string;
+    transport?: string;
+    step3Step?: number;
+  };
+  updateUserInfo?: (newInfo: Partial<{
+    purpose?: string;
+    name?: string;
+    address?: string;
+    hostName?: string;
+    transport?: string;
+    step3Step?: number;
+  }>) => void;
 }
 
 const CARD_LIST = [
   {
-    key: 'friend',
+    key: 'SOCIAL',
     icon: '🍺',
     title: '친목',
     desc: '먹고 놀고 떠들고',
   },
   {
-    key: 'project',
+    key: 'PROJECT',
     icon: '💻',
     title: '프로젝트',
     desc: '회의하고, 공부하고',
   },
 ];
 
-export default function Step1({ onNext }: Step1Props) {
-  const [selected, setSelected] = useState<string | null>(null);
+export default function Step1({ onNext, userInfo, updateUserInfo }: Step1Props) {
+  const [selected, setSelected] = useState<string | null>(userInfo?.purpose || null);
+
+  const handleNext = () => {
+    if (selected && updateUserInfo) {
+      updateUserInfo({ purpose: selected });
+    }
+    onNext();
+  };
 
   return (
     <Container>
@@ -59,7 +82,7 @@ export default function Step1({ onNext }: Step1Props) {
         ))}
       </CardList>
       <NextButton
-        onClick={onNext}
+        onClick={handleNext}
         disabled={!selected}
       >
         다음
