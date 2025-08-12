@@ -29,13 +29,13 @@ interface Step1Props {
 
 const CARD_LIST = [
   {
-    key: 'friend',
+    key: 'SOCIAL',
     icon: '🍺',
     title: '친목',
     desc: '먹고 놀고 떠들고',
   },
   {
-    key: 'project',
+    key: 'PROJECT',
     icon: '💻',
     title: '프로젝트',
     desc: '회의하고, 공부하고',

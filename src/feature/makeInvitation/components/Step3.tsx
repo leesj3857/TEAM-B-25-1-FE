@@ -12,7 +12,7 @@ import AddressInputWithDropdown from '../../../interface/AddressInputWithDropdow
 import { button } from '../../../styles/button';
 
 const TRANSPORTS = [
-  { key: 'public', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
+  { key: 'PUBLIC', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
   { key: 'car', label: '자동차', icon: <Icon path={mdiCar} size={1} /> },
 ];
 

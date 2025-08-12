@@ -10,7 +10,7 @@ import Emoji from '../../../interface/Emoji';
 import FetchingAnimation from '../interface/fetchingAnimation';  
 import { button } from '../../../styles/button';
 import { useEffect } from 'react';
-import { createMeeting, Meeting } from '../../../api';
+import { createMeeting, Meeting, Participant, registerParticipant } from '../../../api';
 
 interface UserInfo {
   purpose?: string;
@@ -32,7 +32,17 @@ export default function Finished({ onComplete, userInfo }: { onComplete?: () => 
         name: userInfo.name,
         purpose: userInfo.purpose
       }).then((res) => {
-        setMeeting(res.data);
+        if (res && typeof res === 'object' && 'linkCode' in res) {
+          setMeeting(res as Meeting);
+          registerParticipant(res.linkCode as string, {
+            name: userInfo.name,
+            address: userInfo.address,
+            transportType: userInfo.transport,
+            lat: 0,
+            lng: 0
+          } as Participant);
+          setIsLoading(false);
+        }
       });
     }
   }, [userInfo]);
@@ -49,7 +59,7 @@ export default function Finished({ onComplete, userInfo }: { onComplete?: () => 
       window.Kakao.Link.sendCustom({
         templateId: templateId, // 빌더에서 복사한 템플릿ID (숫자)
         templateArgs: {
-          invitationId: 1,
+          invitationId: meeting?.linkCode,
         }
       });
     }
@@ -57,7 +67,7 @@ export default function Finished({ onComplete, userInfo }: { onComplete?: () => 
 
   const handleCopy = () => {
     setShowToast(true);
-    navigator.clipboard.writeText('http://3.139.88.251/reply/1');
+    navigator.clipboard.writeText(`https://o-digo.com/reply/${meeting?.linkCode}`);
   }
 
   const handleComplete = () => {

@@ -42,12 +42,20 @@ export interface Meeting {
   linkCode: string;
 }
 
+export interface Participant {
+  name: string;
+  address: string;
+  transportType: string;
+  lat: number;
+  lng: number;
+}
+
 // Meeting 생성
 export const createMeeting = async (
   data: CreateMeetingRequest
 ): Promise<ApiResponse<Meeting>> => {
   const response: AxiosResponse<ApiResponse<Meeting>> = await apiClient.post(
-    '/meetings',
+    '/meetings/',
     data
   );
   return response.data;
@@ -55,20 +63,22 @@ export const createMeeting = async (
 
 // Meeting 조회
 export const getMeeting = async (
-  meetingId: string
+  linkCode: string
 ): Promise<ApiResponse<Meeting>> => {
   const response: AxiosResponse<ApiResponse<Meeting>> = await apiClient.get(
-    `/api/meetings/${meetingId}`
+    `/meetings/${linkCode}/info`
   );
   return response.data;
 };
 
-// Meeting 목록 조회
-export const getMeetings = async (): Promise<ApiResponse<Meeting[]>> => {
-  const response: AxiosResponse<ApiResponse<Meeting[]>> = await apiClient.get(
-    '/api/meetings'
+
+export const registerParticipant = async (
+  linkCode: string,
+  data: Participant
+): Promise<ApiResponse<Participant>> => {
+  const response: AxiosResponse<ApiResponse<Participant>> = await apiClient.post(
+    `/meetings/${linkCode}/participants/register`,
+    data
   );
   return response.data;
 };
-
-export default apiClient;    
