@@ -1,14 +1,14 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from "axios";
 
 // API 기본 설정
-const API_BASE_URL = 'https://o-digo.com';
+const API_BASE_URL = "https://o-digo.com";
 
 // axios 인스턴스 생성
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -16,7 +16,7 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API 요청 오류:', error);
+    console.error("API 요청 오류:", error);
     return Promise.reject(error);
   }
 );
@@ -55,7 +55,7 @@ export const createMeeting = async (
   data: CreateMeetingRequest
 ): Promise<ApiResponse<Meeting>> => {
   const response: AxiosResponse<ApiResponse<Meeting>> = await apiClient.post(
-    '/meetings/',
+    "/meetings/",
     data
   );
   return response.data;
@@ -71,14 +71,27 @@ export const getMeeting = async (
   return response.data;
 };
 
-
 export const registerParticipant = async (
   linkCode: string,
   data: Participant
 ): Promise<ApiResponse<Participant>> => {
-  const response: AxiosResponse<ApiResponse<Participant>> = await apiClient.post(
-    `/meetings/${linkCode}/participants/register`,
-    data
-  );
+  const response: AxiosResponse<ApiResponse<Participant>> =
+    await apiClient.post(`/meetings/${linkCode}/participants/register`, data);
+  return response.data;
+};
+
+export interface PlaceResponseDto {
+  placeId: number;
+  name: string;
+  category?: string;
+  latitude: number;
+  longitude: number;
+}
+
+export const getPlaces = async (
+  linkCode: string
+): Promise<ApiResponse<PlaceResponseDto[]>> => {
+  const response: AxiosResponse<ApiResponse<PlaceResponseDto[]>> =
+    await apiClient.get(`/meetings/${linkCode}/places`);
   return response.data;
 };
