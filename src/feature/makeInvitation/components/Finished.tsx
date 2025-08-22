@@ -11,6 +11,7 @@ import FetchingAnimation from '../interface/fetchingAnimation';
 import { button } from '../../../styles/button';
 import { useEffect } from 'react';
 import { createMeeting, Meeting, Participant, registerParticipant } from '../../../api';
+import { getLatLngByAddress } from '../../../utils/getLng';
 
 interface UserInfo {
   purpose?: string;
@@ -27,23 +28,28 @@ export default function Finished({ onComplete, userInfo }: { onComplete?: () => 
   const [meeting, setMeeting] = useState<Meeting | null>(null);
 
   useEffect(() => {
-    if (userInfo.purpose && userInfo.name) {
-      createMeeting({
-        name: userInfo.name,
-        purpose: userInfo.purpose
-      }).then((res) => {
-        if (res && typeof res === 'object' && 'linkCode' in res) {
-          setMeeting(res as Meeting);
-          registerParticipant(res.linkCode as string, {
-            name: userInfo.name,
-            address: userInfo.address,
-            transportType: userInfo.transport,
-            lat: 0,
-            lng: 0
-          } as Participant);
-          setIsLoading(false);
-        }
-      });
+    if (userInfo.purpose && userInfo.name && userInfo.address) {
+      (async () => {
+        const coords = await getLatLngByAddress(userInfo.address as string);
+        if (!coords) return;
+        const { lat, lng } = coords;
+        createMeeting({
+          name: userInfo.name!,
+          purpose: userInfo.purpose!
+        }).then((res) => {
+          if (res && typeof res === 'object' && 'linkCode' in res) {
+            setMeeting(res as Meeting);
+            registerParticipant(res.linkCode as string, {
+              name: userInfo.name as string,
+              address: userInfo.address as string,
+              transportType: userInfo.transport as string,
+              lat,
+              lng,
+            } as Participant);
+            setIsLoading(false);
+          }
+        });
+      })();
     }
   }, [userInfo]);
 

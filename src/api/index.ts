@@ -95,3 +95,99 @@ export const getPlaces = async (
     await apiClient.get(`/meetings/${linkCode}/places`);
   return response.data;
 };
+
+export type StrategyType = "TIME_MATRIX" | "SUBWAY" ;
+
+export interface MidpointResponseDto {
+  midpointId: number;
+  name: string;
+  lat: number;
+  lng: number;
+}
+
+export const getMidpoint = async (
+  inviteCode: string,
+  strategyType: StrategyType = "TIME_MATRIX"
+): Promise<ApiResponse<MidpointResponseDto>> => {
+  const response: AxiosResponse<ApiResponse<MidpointResponseDto>> = await apiClient.get(
+    `/meetings/${inviteCode}/midpoint?strategyType=${strategyType}`
+  );
+  return response.data;
+};
+
+// 투표 관련 타입
+export interface VoteRequest {
+  placeId: number;
+}
+
+// 투표하기
+export const votePlace = async (
+  inviteCode: string,
+  data: VoteRequest
+): Promise<ApiResponse<any>> => {
+  const response: AxiosResponse<ApiResponse<any>> = await apiClient.post(
+    `/meetings/${inviteCode}/vote`,
+    data
+  );
+  return response.data;
+};
+
+// 투표 결과 조회 관련 타입
+export interface VoteResultResponse {
+  placeId: number;
+  name: string;
+  voteCount: number;
+}
+
+// 투표 결과 조회
+export const getVoteResult = async (
+  inviteCode: string
+): Promise<ApiResponse<VoteResultResponse[]>> => {
+  const response: AxiosResponse<ApiResponse<VoteResultResponse[]>> = await apiClient.get(
+    `/meetings/${inviteCode}/result`
+  );
+  return response.data;
+};
+
+// ===== 참가자 관련 API =====
+
+// 참가자 응답 타입 (기존 Participant와 구분)
+export interface ParticipantResponse {
+  participantId: number;
+  name: string;
+  transportType: string;
+  lat: number;
+  lng: number;
+}
+
+// 참가자 목록 조회
+export const getParticipants = async (
+  linkCode: string
+): Promise<ApiResponse<ParticipantResponse[]>> => {
+  const response: AxiosResponse<ApiResponse<ParticipantResponse[]>> = await apiClient.get(
+    `/meetings/${linkCode}/participants/`
+  );
+  return response.data;
+};
+
+// 참가자 정보 수정
+export const updateParticipant = async (
+  linkCode: string,
+  data: Participant
+): Promise<ApiResponse<any>> => {
+  const response: AxiosResponse<ApiResponse<any>> = await apiClient.put(
+    `/meetings/${linkCode}/participants/update`,
+    data
+  );
+  return response.data;
+};
+
+// 참가자 삭제
+export const deleteParticipant = async (
+  linkCode: string
+): Promise<ApiResponse<any>> => {
+  const response: AxiosResponse<ApiResponse<any>> = await apiClient.delete(
+    `/meetings/${linkCode}/participants/delete`
+  );
+  return response.data;
+};

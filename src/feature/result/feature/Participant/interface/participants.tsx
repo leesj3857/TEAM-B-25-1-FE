@@ -44,7 +44,7 @@ const Container = styled(motion.div)`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid ${grayscale[50]};
+    border: 1px solid ${grayscale[40]};
     border-radius: 10px;
     padding: 20px;
 `;
@@ -55,7 +55,7 @@ const Header = styled.div`
     justify-content: space-between;
     width: 100%;
     margin-bottom: 25px;
-    border-bottom: 1px solid ${grayscale[50]};
+    border-bottom: 1px solid ${grayscale[40]};
     padding: 0 5px 15px 5px;
 `;
 

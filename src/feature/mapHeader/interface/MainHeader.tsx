@@ -5,8 +5,10 @@ import { grayscale } from "../../../styles/colors/grayscale";
 import { applyTypography } from "../../../styles/typography";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { primary } from "../../../styles/colors/primary";
+import { secondary } from "../../../styles/colors/secondary";
 
-export default function MainHeader({name, line}: {name: string, line: string[]}) {
+export default function MainHeader({name, line, time}: {name: string, line: string[], time: number}) {
     const navigate = useNavigate();
 
     const lineColor = {
@@ -20,6 +22,11 @@ export default function MainHeader({name, line}: {name: string, line: string[]})
         '8': '#E6186C',
         '9': '#BDB092',
         '우이': '#BB8336',
+        '경의': '#77C4A3',
+        '경춘': '#0C8E72',
+        '공항': '#0090D2',
+        '신분당': '#D4003B',
+        '수인': '#F5A200',
         default: '#000000',
     }
 
@@ -34,11 +41,23 @@ export default function MainHeader({name, line}: {name: string, line: string[]})
                 <Icon path={mdiArrowLeft} size={1.5} /> 
             </Back>
             <Station>
-                {line.map((l) => (
-                    <Line key={l} style={{ background: lineColor[l as keyof typeof lineColor] }}>
-                        {l}
-                    </Line>
-                ))}
+                {line.map((l) => {
+                    // lineColor의 키 값이 line 문자열에 포함되어 있는지 확인
+                    const colorKey = Object.keys(lineColor).find(key => 
+                        key !== 'default' && l.includes(key)
+                    );
+                    
+                    // colorKey가 없으면 렌더링하지 않음
+                    if (!colorKey) return null;
+                    
+                    const backgroundColor = lineColor[colorKey as keyof typeof lineColor];
+                    
+                    return (
+                        <Line key={l} style={{ background: backgroundColor }}>
+                            <LineName isNumber={!isNaN(Number(colorKey))}>{colorKey}</LineName>
+                        </Line>
+                    );
+                })}
                 <span>{name}</span>
             </Station>
             <Vote onClick={() => {
@@ -47,11 +66,16 @@ export default function MainHeader({name, line}: {name: string, line: string[]})
                 <Icon path={mdiVote} size={1.2} />
                 <span>투표함</span>
             </Vote>
+            <Time>
+                <CharacterImg src="/logo_v2.webp" alt="캐릭터" />
+                {time}분 소요
+            </Time>
         </Container>
     )
 }
 
 const Container = styled(motion.div)`
+    position: relative;
     width: 100%;
     height: 100px;
     background: #fff;
@@ -91,6 +115,13 @@ const Line = styled.div`
     ${applyTypography('body.xsmall')}
     `;
 
+const LineName = styled.span<{isNumber: boolean}>`
+    ${({isNumber}) => !isNumber && `
+        font-size: 7px;
+    `}
+    white-space: nowrap;
+`;
+
 const Vote = styled.button`
     background: none;
     border: none;
@@ -100,4 +131,24 @@ const Vote = styled.button`
     justify-content: center;
     ${applyTypography('label.xsmall')}
     color: ${grayscale[80]};
+`;
+
+const Time = styled.div`
+    position: absolute;
+    top: 110%;
+    left: 10px;
+    background-color: ${primary[5]};
+    border-radius: 30px;
+    padding: 7px 15px;
+    ${applyTypography('body.xsmall')}
+    color: ${secondary[30]};
+    font-weight: 700;
+    border: 1px solid ${secondary[20]};
+    display: flex;
+    align-items: center;
+    gap: 5px;
+`;
+
+const CharacterImg = styled.img`
+    width: 20px;
 `;

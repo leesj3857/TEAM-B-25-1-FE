@@ -7,14 +7,36 @@ import { applyTypography } from "../../../../../styles/typography";
 import { secondary } from "../../../../../styles/colors/secondary";
 import { danger } from "../../../../../styles/colors/system";
 import Leave from "./Leave";
+import { useNavigate } from "react-router-dom";
+import { useInviteCode } from "../../../../../context/inviteCodeContext";
+import { deleteParticipant } from "../../../../../api";
 
 export default function MyProfile({name, isDone, setIsEditing}: {name: string, isDone: boolean, setIsEditing: (isEditing: boolean) => void}) {
     const [isLeaveOpen, setIsLeaveOpen] = useState(false);
+    const navigate = useNavigate();
+    const { inviteCode, clearInviteCode } = useInviteCode();
 
-    const handleLeave = () => {
-        // 나가기 로직 구현
-        console.log("나가기 처리");
-        setIsLeaveOpen(false);
+    const handleLeave = async () => {
+        if (!inviteCode) {
+            console.error("inviteCode가 없습니다.");
+            return;
+        }
+
+        try {
+            await deleteParticipant(inviteCode);
+            
+            // 전역상태에서 inviteCode 제거
+            clearInviteCode();
+            
+            // 첫 페이지로 이동
+            navigate("/");
+            
+        } catch (error) {
+            console.error("참가자 삭제 실패:", error);
+            // 에러 처리 (필요시 토스트 메시지 등)
+        } finally {
+            setIsLeaveOpen(false);
+        }
     };
 
     return (
@@ -53,7 +75,7 @@ const Container = styled(motion.div)`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid ${grayscale[50]};
+    border: 1px solid ${grayscale[40]};
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 15px;

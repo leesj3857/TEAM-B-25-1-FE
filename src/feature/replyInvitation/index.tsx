@@ -3,7 +3,9 @@ import { ProgressBar } from '../makeInvitation/interface/ProgressBar';
 import { useState, useEffect } from 'react';
 import { ProcessStep, ProcessStepStatus } from '../makeInvitation/type/processStep';
 import AlertModal from '../../interface/alertModal';
-
+import { registerParticipant, Participant } from '../../api';
+import { getLatLngByAddress } from '../../utils/getLng';
+import { useNavigate } from 'react-router-dom';
 interface UserInfo {
   name?: string;
   address?: string;
@@ -23,7 +25,7 @@ export default function ReplyInvitation({ invitationId }: { invitationId: string
     const [steps, setSteps] = useState<ProcessStep[]>(stepsInit);
     const [showModal, setShowModal] = useState(false);
     const [userInfo, setUserInfo] = useState<UserInfo>({});
-
+    const navigate = useNavigate();
     useEffect(() => {
         if (!invitationId) return;
         
@@ -53,9 +55,24 @@ export default function ReplyInvitation({ invitationId }: { invitationId: string
         }));
     };
 
-    const clearSessionStorage = () => {
+    const clearSessionStorage = async (userInfo: {
+        name?: string;
+        address?: string;
+        transport?: string;
+    }) => {
         if (!invitationId) return;
+        const coords = await getLatLngByAddress(userInfo.address || '');
+        if (!coords) return;
+        const {lat, lng} = coords;
+        await registerParticipant(invitationId, {
+            name: userInfo.name || '',
+            address: userInfo.address || '',
+            transportType: userInfo.transport || '',
+            lat,
+            lng
+          } as Participant);
         sessionStorage.removeItem(SESSION_STORAGE_KEY(invitationId));
+        navigate('/map/'+invitationId);
     };
 
     const handleNext = () => {
@@ -86,7 +103,7 @@ export default function ReplyInvitation({ invitationId }: { invitationId: string
 
     const handleCancel = () => {
         setShowModal(false);
-        clearSessionStorage();
+        clearSessionStorage(userInfo);
         setUserInfo({});
     };
 

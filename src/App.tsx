@@ -6,7 +6,7 @@ import ReplyInvitationPage from './pages/ReplyInvitation';
 import Map from './pages/Map';
 import ResultPage from './pages/Result';
 import { useEffect } from 'react';
-
+import { InviteCodeProvider } from './context/inviteCodeContext';
 function App() {
   useEffect(() => {
     if (window.Kakao && !window.Kakao.isInitialized()) {
@@ -15,16 +15,16 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <InviteCodeProvider>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/make" element={<MakeInvitationPage />} />
         <Route path="/reply/:invitationId" element={<ReplyInvitationPage />} />
         <Route path="/reply" element={<Navigate to="/" replace />} />
-        <Route path="/map" element={<Map />} />
+        <Route path="/map/:inviteCode" element={<Map />} />
         <Route path="/result" element={<ResultPage />} />
       </Routes>
-    </div>
+    </InviteCodeProvider>
   );
 }
 

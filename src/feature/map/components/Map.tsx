@@ -9,15 +9,13 @@ import {
 } from "../types/marker";
 // import { getPlaces } from "../../../api"; // 실제 API 붙일 때 주석 해제
 
-type SheetMode = "hide" | "half" | "full";
 
-const MapPage = () => {
+const MapPage = ({mode, setMode}: {mode: 'hide' | 'half' | 'full', setMode: (mode: 'hide' | 'half' | 'full') => void}) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const { map /*, markerData*/ } = useMap(mapRef); // markerData는 더 이상 사용하지 않음
 
   const [places, setPlaces] = useState<MapPlace[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [sheetMode, setSheetMode] = useState<SheetMode>("hide");
 
   // 각 마커를 제어할 수 있는 작은 API 보관 (focus, 좌표)
   const markerApiRef = useRef<
@@ -59,7 +57,7 @@ const MapPage = () => {
 
       // 마커 클릭에서 SelectedPlace 오버레이를 띄우고 싶다면 'hide'로 내리기
       // (리스트 클릭은 BottomSheet 내부에서 이미 처리함)
-      setSheetMode(showOverlayOnSheet ? "hide" : "half");
+      setMode(showOverlayOnSheet ? "hide" : "half");
 
       const api = markerApiRef.current[idx];
       if (!api || !map || !(window as any).naver?.maps) return;
@@ -109,8 +107,8 @@ const MapPage = () => {
         ))}
 
       <BottomSheet
-        mode={sheetMode}
-        setMode={setSheetMode}
+        mode={mode}
+        setMode={setMode}
         places={places}
         selectedIndex={selectedIndex}
         onSelectPlace={handlePlaceClickFromSheet}

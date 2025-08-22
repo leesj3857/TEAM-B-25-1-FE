@@ -10,11 +10,42 @@ import VoteResult from "./feature/VoteResult";
 import Participant from "./feature/Participant";
 import { useNavigate } from "react-router-dom";
 import EditInfo from "./feature/EditInfo";
+import { updateParticipant } from "../../api";
+import { useInviteCode } from "../../context/inviteCodeContext";
+import { getLatLngByAddress } from "../../utils/getLng";
 
 export default function Result() {
   const [activeTab, setActiveTab] = useState<'result' | 'participant'>('result');
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
+  const { inviteCode } = useInviteCode();
+  const onSave = async (name: string, address: string, transport: string) => {
+    if (!inviteCode) {
+      console.error("inviteCode가 없습니다.");
+      return;
+    }
+
+    try {
+      const coords = await getLatLngByAddress(address || '');
+      if (!coords) return;
+      const {lat, lng} = coords;
+      
+      await updateParticipant(inviteCode, {
+        name,
+        address,
+        transportType: transport,
+        lat,
+        lng
+      });
+      
+      // 성공적으로 저장되면 편집 모드 종료
+      setIsEditing(false);
+      
+    } catch (error) {
+      console.error("참가자 정보 업데이트 실패:", error);
+      // 에러 처리 (필요시 토스트 메시지 등)
+    }
+  }
   return (
     <Container>
       <Top>
@@ -37,9 +68,7 @@ export default function Result() {
             name="텔레토비" 
             address="서울시 성동구 왕십리로 100" 
             transport="public" 
-            onSave={() => {
-              setIsEditing(false);
-            }} 
+            onSave={onSave} 
             onCancel={() => setIsEditing(false)} 
           />
         </Body>

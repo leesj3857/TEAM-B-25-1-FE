@@ -4,9 +4,10 @@ import { grayscale } from "../../../styles/colors/grayscale";
 import { applyTypography } from "../../../styles/typography";
 import { useState, useCallback } from "react";
 import { Icon } from "@mdi/react";
-import { mdiCheckCircleOutline } from "@mdi/js";
+import { mdiCheckCircleOutline, mdiMapSearch } from "@mdi/js";
 import { secondary } from "../../../styles/colors/secondary";
 import { css } from "@emotion/react";
+import { primary } from "../../../styles/colors/primary";
 
 export default function SelectedPlace({name, rating, time, onClickVote, onClose}: {name: string, rating: number, time: number, onClickVote: () => void, onClose: () => void}) {
     const [isVoted, setIsVoted] = useState(false);
@@ -64,20 +65,18 @@ export default function SelectedPlace({name, rating, time, onClickVote, onClose}
             onTouchEnd={handleTouchEnd}
             style={{ touchAction: 'none' }}
         >
-            <PlaceInfo>
-                <Image>
-                </Image>    
+            <PlaceInfo>    
                 <PlaceInfoRight>
+                    <PinIcon>
+                        <img src="/pin.svg" alt="pin" style={{width: '100%', height: '100%'}} />
+                    </PinIcon>
                     <PlaceName>
                         {name}
                     </PlaceName>
-                    <PlaceRating>
-                        네이버 평점 {rating}
-                    </PlaceRating>
-                    <PlaceTime>
-                        소요 시간 {time}분
-                    </PlaceTime>
                 </PlaceInfoRight>
+                <MapButton>
+                    <Icon path={mdiMapSearch} size={1} color={primary[30]} />
+                </MapButton>
             </PlaceInfo>
             <Vote>
                     <VoteButton onClick={() => {
@@ -116,7 +115,9 @@ const PlaceInfo = styled.div`
     width: 100%;
     height: 100%;
     display: flex;
+    justify-content: space-between;
     gap: 25px;
+    margin-bottom: 10px;
 `;
 const Vote = styled.div`
     display: flex;
@@ -130,6 +131,7 @@ const VoteButton = styled.button<{isVoted: boolean}>`
     background-color: ${secondary[5]};
     border: 1px solid ${secondary[10]};
     color: ${secondary[50]};
+    font-weight: 700 !important;
     ${applyTypography('label.medium')}
     border-radius: 8px;
     box-shadow: none;
@@ -159,23 +161,29 @@ const Image = styled.div`
 
 const PlaceInfoRight = styled.div`
     display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-    `;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0 15px 0;
+`;
 
 const PlaceName = styled.div`   
     ${applyTypography('title.medium')}
     color: ${grayscale[90]};
-    margin-bottom: 8px;
 `;
 
-const PlaceRating = styled.div`
-    ${applyTypography('label.medium')}
-    color: ${grayscale[60]};
-    margin-bottom: 5px;
+const MapButton = styled.button`
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: white;
+    border: 1px solid ${secondary[10]};
+    color: ${primary[30]};
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
-const PlaceTime = styled.div`
-    ${applyTypography('label.medium')}
-    color: ${grayscale[60]};
+const PinIcon = styled.div`
+    width: 25px;
+    height: 25px;
 `;

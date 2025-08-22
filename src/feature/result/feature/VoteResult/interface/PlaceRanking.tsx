@@ -76,7 +76,7 @@ const Rank = styled.div<{rank: number}>`
     margin-left: 2px;
     width: 30px;
     height: 30px;
-    border: 4px solid ${grayscale[50]};
+    border: 4px solid ${grayscale[40]};
     background-color: ${grayscale[60]};
     border-radius: 50%;
     display: flex;

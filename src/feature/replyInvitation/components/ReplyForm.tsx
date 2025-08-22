@@ -10,8 +10,8 @@ import AddressInputWithDropdown from '../../../interface/AddressInputWithDropdow
 import { button } from '../../../styles/button';
 import Emoji from '../../../interface/Emoji';
 const TRANSPORTS = [
-  { key: 'public', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
-  { key: 'car', label: '자동차', icon: <Icon path={mdiCar} size={1} /> },
+  { key: 'PUBLIC', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
+  { key: 'CAR', label: '자동차', icon: <Icon path={mdiCar} size={1} /> },
 ];
 
 export default function ReplyForm({ 
@@ -35,7 +35,11 @@ export default function ReplyForm({
     transport?: string;
     step?: number;
   }>) => void,
-  onComplete?: () => void
+  onComplete?: (userInfo: {
+    name?: string;
+    address?: string;
+    transport?: string;
+  }) => void
 }) {
   const [transport, setTransport] = useState<string | null>(userInfo?.transport || null);
   const [address, setAddress] = useState(userInfo?.address || '');
@@ -92,7 +96,11 @@ export default function ReplyForm({
       });
     }
     if (onComplete) {
-      onComplete();
+      onComplete({
+        name: name,
+        address: address,
+        transport: transport || undefined
+      });
     }
   };
 

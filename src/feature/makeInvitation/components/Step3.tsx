@@ -13,7 +13,7 @@ import { button } from '../../../styles/button';
 
 const TRANSPORTS = [
   { key: 'PUBLIC', label: '대중교통', icon: <Icon path={mdiSubwayVariant} size={1} /> },
-  { key: 'car', label: '자동차', icon: <Icon path={mdiCar} size={1} /> },
+  { key: 'CAR', label: '자동차', icon: <Icon path={mdiCar} size={1} /> },
 ];
 
 export default function Step3({ onNext, onPrev, userInfo, updateUserInfo }: { 

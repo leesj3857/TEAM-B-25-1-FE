@@ -2,7 +2,12 @@ import styled from '@emotion/styled';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { applyTypography } from '../../../styles/typography';
 import { button } from '../../../styles/button';
-export default function Place({name, time, imageList, onClick}: {name: string, time: number, imageList: string[], onClick: () => void}) {
+import { mdiCheckCircleOutline, mdiChevronRight } from '@mdi/js';
+import { Icon } from '@mdi/react';
+import { secondary } from '../../../styles/colors/secondary';
+import { primary } from '../../../styles/colors/primary';
+ 
+export default function Place({name, time, imageList, onClick, isVoted}: {name: string, time: number, imageList: string[], onClick: () => void, isVoted: boolean}) {
     const onClickVote = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         console.log('투표하기');
@@ -12,20 +17,18 @@ export default function Place({name, time, imageList, onClick}: {name: string, t
         <Container onClick={onClick}>
             <TopContainer>
                 <PlaceInfo>
+                    <PinIcon>
+                        <img src="/pin.svg" alt="pin" style={{width: '100%', height: '100%'}} />
+                    </PinIcon>
                     <Name>{name}</Name>
-                    <Time>소요시간 {time}분</Time>
+                    <Icon path={mdiChevronRight} size={1} color={grayscale[60]} />
                 </PlaceInfo>
                 <Vote>
-                    <VoteButton onClick={(e) => onClickVote(e)}>
-                        투표하기
+                    <VoteButton onClick={(e) => onClickVote(e)} isVoted={isVoted}>
+                        {isVoted ?  <><Icon path={mdiCheckCircleOutline} size={0.8} /> 투표완료</> : '투표하기'}
                     </VoteButton>
                 </Vote>
             </TopContainer>
-            <ImageList>
-                {imageList.map((image, index) => (
-                    <Image key={index} image={image} />
-                ))}
-            </ImageList>
         </Container>
     )
 }
@@ -37,15 +40,13 @@ const Container = styled.div`
 
 const TopContainer = styled.div`
     width: 100%;
-    min-height: 40px;
     display: flex;
-    margin-bottom: 20px;
+    align-items: center;
 `;
 
 const PlaceInfo = styled.div`
     display: flex;
-    padding-right: 10px;
-    flex-direction: column;
+    gap: 5px;
     flex: 1;
 `;
 
@@ -64,30 +65,40 @@ const Vote = styled.div`
     align-items: center;
 `;
 
-const VoteButton = styled.button`
-    width: 150px;
+const VoteButton = styled.button<{isVoted: boolean}>`
+    width: 120px;
     height: 40px;
-    ${button.Secondary}
-`;  
-
-const ImageList = styled.div`
-    width: 100%;
-    height: 80px;
+    background-color: ${({isVoted}) => isVoted ? secondary[40] : grayscale[0]};
+    border: 1px solid ${({isVoted}) => isVoted ? secondary[40] : secondary[70]};
+    color: ${({isVoted}) => isVoted ? grayscale[0] : secondary[70]};
+    ${applyTypography('label.small')}
+    border-radius: 8px;
+    box-shadow: none;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    &:hover {
+        background-color: ${({isVoted}) => isVoted ? secondary[50] : grayscale[5]};
+    }
+    &:active {
+        background-color: ${({isVoted}) => isVoted ? secondary[50] : primary[5]};
+        border: 1px solid ${({isVoted}) => isVoted ? secondary[50] : secondary[60]};
+    }
+    &:disabled {
+        background-color: ${({isVoted}) => isVoted ? secondary[40] : grayscale[30]};
+        border: 1px solid ${({isVoted}) => isVoted ? secondary[40] : grayscale[40]};
+        color: ${({isVoted}) => isVoted ? grayscale[0] : grayscale[60]};
+    }
     display: flex;
     align-items: center;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    padding-bottom: 10px;
-    gap: 9px;
-`;
+    justify-content: center;
+    gap: 5px;
+    svg {
+        position: relative;
+        bottom: 1px;
+    }
+`;  
 
-const Image = styled.div<{image: string}>`
-    width: 83px;
-    height: 76px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    background-color: ${grayscale[40]};
-    background-image: url(${({image}) => image});
-    background-size: cover;
-    background-position: center;
+const PinIcon = styled.div`
+    width: 25px;
+    height: 25px;
 `;
