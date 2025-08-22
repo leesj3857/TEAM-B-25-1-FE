@@ -219,6 +219,7 @@ export default function BottomSheet({
                   });
                   setMode("hide");
                 }}
+                isVoted={false}
               />
               {index !== places.length - 1 && <PlaceDivider />}
             </Fragment>
