@@ -26,6 +26,15 @@ export default function ReplyInvitation({ invitationId }: { invitationId: string
     const [showModal, setShowModal] = useState(false);
     const [userInfo, setUserInfo] = useState<UserInfo>({});
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!invitationId) return;
+        const existing = localStorage.getItem(invitationId);
+        if (existing) {
+            navigate('/map/' + invitationId);
+        }
+    }, [invitationId, navigate]);
+
     useEffect(() => {
         if (!invitationId) return;
         
@@ -64,13 +73,16 @@ export default function ReplyInvitation({ invitationId }: { invitationId: string
         const coords = await getLatLngByAddress(userInfo.address || '');
         if (!coords) return;
         const {lat, lng} = coords;
-        await registerParticipant(invitationId, {
+        const participant = await registerParticipant(invitationId, {
             name: userInfo.name || '',
             address: userInfo.address || '',
             transportType: userInfo.transport || '',
             lat,
             lng
           } as Participant);
+        if (participant && participant.participantId) {
+            localStorage.setItem(invitationId as string, JSON.stringify(participant));
+        }
         sessionStorage.removeItem(SESSION_STORAGE_KEY(invitationId));
         navigate('/map/'+invitationId);
     };

@@ -3,11 +3,11 @@ import styled from "@emotion/styled";
 import MyProfile from "./interface/myProfile";
 import Participants from "./interface/participants";
 import { useState, useEffect } from "react";
-import { getParticipants, ParticipantResponse } from "../../../../api";
+import { getParticipants, ParticipantGetResponse } from "../../../../api";
 import { useInviteCode } from "../../../../context/inviteCodeContext";
 
 export default function Participant({setIsEditing}: {setIsEditing: (isEditing: boolean) => void}) {
-    const [participants, setParticipants] = useState<ParticipantResponse[]>([]);
+    const [participants, setParticipants] = useState<ParticipantGetResponse[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { inviteCode } = useInviteCode();
@@ -25,10 +25,10 @@ export default function Participant({setIsEditing}: {setIsEditing: (isEditing: b
                 
                 const response = await getParticipants(inviteCode);
                 
-                if (response.success) {
-                    setParticipants(response.data);
+                if (response) {
+                    setParticipants(response);
                 } else {
-                    setError(response.message || "참가자 목록을 불러오는데 실패했습니다.");
+                    setError("참가자 목록을 불러오는데 실패했습니다.");
                 }
                 
             } catch (error) {
@@ -66,7 +66,7 @@ export default function Participant({setIsEditing}: {setIsEditing: (isEditing: b
             <MyProfile name="텔레토비" isDone={true} setIsEditing={setIsEditing} />
             <Participants 
                 totalNumber={participants.length} 
-                participants={participants.map((p: ParticipantResponse) => ({
+                participants={participants.map((p: ParticipantGetResponse) => ({
                     name: p.name, 
                     isDone: false
                 }))} 

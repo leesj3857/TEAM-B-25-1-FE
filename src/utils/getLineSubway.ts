@@ -37,8 +37,10 @@ export const getLineSubwayFromAPI = async (stationName: string): Promise<string[
             }
             return lineNum;
         });
-        console.log('추출된 호선 번호들:', lineNumbers);
-        return lineNumbers;
+        // 중복 제거
+        const uniqueLineNumbers = Array.from(new Set(lineNumbers));
+        console.log('추출된 호선 번호들:', uniqueLineNumbers);
+        return uniqueLineNumbers;
       }
     }
     

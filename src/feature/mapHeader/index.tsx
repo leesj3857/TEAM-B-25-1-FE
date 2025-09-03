@@ -28,8 +28,8 @@ export default function MapHeader({mode}: {mode: 'hide' | 'half' | 'full'}) {
     }, []);
 
     // midpoint 이름 추출 (기본값: "성수역")
-    const midpointName = midpointData?.data?.name || "";
-    const participantCount = midpointData?.data ? 10 : 10; // 실제 참가자 수로 교체 필요
+    const midpointName = midpointData?.name || "";
+    const participantCount = midpointData ? midpointData.participantCount : 10; // 실제 참가자 수로 교체 필요
 
     // 호선 정보를 가져오는 쿼리
     const { data: lineData } = useQuery({

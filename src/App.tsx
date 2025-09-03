@@ -22,7 +22,7 @@ function App() {
         <Route path="/reply/:invitationId" element={<ReplyInvitationPage />} />
         <Route path="/reply" element={<Navigate to="/" replace />} />
         <Route path="/map/:inviteCode" element={<Map />} />
-        <Route path="/result" element={<ResultPage />} />
+        <Route path="/result/:inviteCode" element={<ResultPage />} />
       </Routes>
     </InviteCodeProvider>
   );

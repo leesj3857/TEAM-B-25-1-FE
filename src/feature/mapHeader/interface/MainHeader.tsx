@@ -7,10 +7,11 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { primary } from "../../../styles/colors/primary";
 import { secondary } from "../../../styles/colors/secondary";
+import { useInviteCode } from "../../../context/inviteCodeContext";
 
 export default function MainHeader({name, line, time}: {name: string, line: string[], time: number}) {
     const navigate = useNavigate();
-
+    const { inviteCode } = useInviteCode();
     const lineColor = {
         '1': '#0052A4',
         '2': '#00A84D',
@@ -61,7 +62,7 @@ export default function MainHeader({name, line, time}: {name: string, line: stri
                 <span>{name}</span>
             </Station>
             <Vote onClick={() => {
-                navigate('/result');
+                navigate('/result/' + inviteCode);
             }}>
                 <Icon path={mdiVote} size={1.2} />
                 <span>투표함</span>
@@ -105,8 +106,8 @@ const Station = styled.div`
 
 
 const Line = styled.div`
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: flex;
     align-items: center;

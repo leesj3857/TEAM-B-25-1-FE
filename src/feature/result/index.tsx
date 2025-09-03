@@ -53,7 +53,7 @@ export default function Result() {
           if (isEditing) {
             setIsEditing(false);
           } else {
-            navigate('/map');
+            navigate('/map/' + inviteCode);
           }
         }}>
           <Icon path={mdiArrowLeft} size={1.5} color={grayscale[100]} /> 

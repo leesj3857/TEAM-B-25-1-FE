@@ -10,7 +10,7 @@ import Emoji from '../../../interface/Emoji';
 import FetchingAnimation from '../interface/fetchingAnimation';  
 import { button } from '../../../styles/button';
 import { useEffect } from 'react';
-import { createMeeting, Meeting, Participant, registerParticipant } from '../../../api';
+import { createMeeting, CreateMeetingResponse, Meeting, Participant, registerParticipant } from '../../../api';
 import { getLatLngByAddress } from '../../../utils/getLng';
 
 interface UserInfo {
@@ -25,7 +25,7 @@ interface UserInfo {
 export default function Finished({ onComplete, userInfo }: { onComplete?: () => void, userInfo: UserInfo }) {
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [meeting, setMeeting] = useState<Meeting | null>(null);
+  const [meeting, setMeeting] = useState<CreateMeetingResponse | null>(null);
 
   useEffect(() => {
     if (userInfo.purpose && userInfo.name && userInfo.address) {
@@ -36,16 +36,20 @@ export default function Finished({ onComplete, userInfo }: { onComplete?: () => 
         createMeeting({
           name: userInfo.name!,
           purpose: userInfo.purpose!
-        }).then((res) => {
+        }).then(async (res) => {
           if (res && typeof res === 'object' && 'linkCode' in res) {
-            setMeeting(res as Meeting);
-            registerParticipant(res.linkCode as string, {
-              name: userInfo.name as string,
-              address: userInfo.address as string,
-              transportType: userInfo.transport as string,
+            setMeeting(res as CreateMeetingResponse);
+            const participant = await registerParticipant(res.linkCode as string, {
+              name: userInfo.name!,
+              address: userInfo.address!,
+              transportType: userInfo.transport!,
               lat,
               lng,
             } as Participant);
+            console.log(participant);
+            if (participant && participant.participantId) {
+              localStorage.setItem(res.linkCode as string, JSON.stringify(participant));
+            }
             setIsLoading(false);
           }
         });
