@@ -39,7 +39,9 @@ export default function MainHeader({name, line, time}: {name: string, line: stri
             transition={{ duration: 0.3 }}
         >
             <Back>
-                <Icon path={mdiArrowLeft} size={1.5} /> 
+                <button style={{ opacity: 0, pointerEvents: 'none'}} tabIndex={-1}>
+                    <Icon path={mdiArrowLeft} size={1.5} /> 
+                </button>
             </Back>
             <Station>
                 {line.map((l) => {

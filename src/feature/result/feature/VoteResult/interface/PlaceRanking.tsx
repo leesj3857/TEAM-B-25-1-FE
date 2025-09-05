@@ -11,6 +11,18 @@ import { PlaceRankingType } from "../../../type/PlaceRanking";
 
 export default function PlaceRanking({placeRanking}: {placeRanking: PlaceRankingType[]}) {
   const [showTotalResult, setShowTotalResult] = useState<boolean>(false);
+  
+  // 투표한 장소가 없는 경우
+  if (!placeRanking || placeRanking.length === 0) {
+    return (
+      <TotalContainer>
+        <EmptyState>
+          <EmptyMessage>아직 투표한 장소가 없습니다</EmptyMessage>
+          <EmptySubMessage>참가자들이 투표를 완료하면 결과가 표시됩니다</EmptySubMessage>
+        </EmptyState>
+      </TotalContainer>
+    );
+  }
 
   const placeUI = ({rank, name, count}: PlaceRankingType) => {
     return (
@@ -33,7 +45,7 @@ export default function PlaceRanking({placeRanking}: {placeRanking: PlaceRanking
   return (
     <TotalContainer>
       {showTotalResult ? placeRanking.map((place) => placeUI(place)) : placeRanking.slice(0, 3).map((place) => <Fragment key={place.id}>{placeUI(place)}</Fragment>)}
-      {showTotalResult ? null : <ShowTotalResult onClick={() => setShowTotalResult(true)}>
+      {!showTotalResult && placeRanking.length > 3 && <ShowTotalResult onClick={() => setShowTotalResult(true)}>
         <span>전체보기</span>
       </ShowTotalResult>}
     </TotalContainer>
@@ -127,4 +139,27 @@ const ShowTotalResult = styled.button`
   align-items: center;
   justify-content: center;
   border-radius: 8px;
+`;
+
+const EmptyState = styled.div`
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+`;
+
+const EmptyMessage = styled.div`
+  ${applyTypography('title.small')}
+  color: ${grayscale[70]};
+  text-align: center;
+`;
+
+const EmptySubMessage = styled.div`
+  ${applyTypography('body.small')}
+  color: ${grayscale[50]};
+  text-align: center;
+  line-height: 1.4;
 `;

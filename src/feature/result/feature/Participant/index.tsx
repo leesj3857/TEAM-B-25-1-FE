@@ -2,73 +2,81 @@ import Header from "./interface/header";
 import styled from "@emotion/styled";
 import MyProfile from "./interface/myProfile";
 import Participants from "./interface/participants";
-import { useState, useEffect } from "react";
-import { getParticipants, ParticipantGetResponse } from "../../../../api";
+import { useQuery } from "@tanstack/react-query";
+import { getMeeting } from "../../../../api/meeting";
+import { getMidpoint } from "../../../../api";
+import { getLineSubwayFromAPI } from "../../../../utils/getLineSubway";
+import { ParticipantGetResponse } from "../../../../api";
 import { useInviteCode } from "../../../../context/inviteCodeContext";
 
-export default function Participant({setIsEditing}: {setIsEditing: (isEditing: boolean) => void}) {
-    const [participants, setParticipants] = useState<ParticipantGetResponse[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+interface ParticipantProps {
+    setIsEditing: (isEditing: boolean) => void;
+    participants: ParticipantGetResponse[];
+    myParticipant?: ParticipantGetResponse;
+}
+
+export default function Participant({setIsEditing, participants, myParticipant}: ParticipantProps) {
     const { inviteCode } = useInviteCode();
 
-    useEffect(() => {
-        const fetchParticipants = async () => {
-            if (!inviteCode) {
-                console.error("inviteCode가 없습니다.");
-                return;
-            }
+    // 미팅 정보를 가져오는 쿼리
+    const { data: meetingData } = useQuery({
+        queryKey: ['meeting', inviteCode],
+        queryFn: () => getMeeting(inviteCode),
+        enabled: !!inviteCode,
+        staleTime: 5 * 60 * 1000, // 5분간 데이터 유지
+    });
 
-            try {
-                setIsLoading(true);
-                setError(null);
-                
-                const response = await getParticipants(inviteCode);
-                
-                if (response) {
-                    setParticipants(response);
-                } else {
-                    setError("참가자 목록을 불러오는데 실패했습니다.");
-                }
-                
-            } catch (error) {
-                console.error("참가자 목록 조회 실패:", error);
-                setError("참가자 목록을 불러오는데 실패했습니다.");
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    // 중간장소 정보를 가져오는 쿼리
+    const { data: midpointData } = useQuery({
+        queryKey: ['midpoint', inviteCode],
+        queryFn: () => getMidpoint(inviteCode, "TIME_MATRIX"),
+        enabled: !!inviteCode,
+        staleTime: 5 * 60 * 1000, // 5분간 데이터 유지
+    });
 
-        fetchParticipants();
-    }, [inviteCode]);
+    // midpoint 이름 추출
+    const midpointName = midpointData?.name || "";
 
-    // 로딩 중일 때
-    if (isLoading) {
-        return (
-            <Container>
-                <div>참가자 목록을 불러오는 중...</div>
-            </Container>
-        );
-    }
+    // 호선 정보를 가져오는 쿼리
+    const { data: lineData } = useQuery({
+        queryKey: ['subwayLine', midpointName],
+        queryFn: () => getLineSubwayFromAPI(midpointName),
+        enabled: !!midpointName,
+        staleTime: 10 * 60 * 1000, // 10분간 데이터 유지
+    });
 
-    // 에러가 있을 때
-    if (error) {
-        return (
-            <Container>
-                <div>에러: {error}</div>
-            </Container>
-        );
+    // 호선 정보 처리 (배열 형태로 변환)
+    let subwayLines: string[] = [];
+    
+    if (lineData && lineData.length > 0) {
+        // API에서 호선 정보를 성공적으로 가져온 경우
+        subwayLines = lineData;
+    } else if (midpointData?.line) {
+        // API 실패 시 midpointData.line에서 호선 정보 추출
+        const lineNum = midpointData.line;
+        // "2호선" 형태에서 숫자만 추출
+        if (lineNum && lineNum.match(/^\d+호선$/)) {
+            const extractedLine = lineNum.replace(/^0+/, '').replace('호선', '');
+            subwayLines = [extractedLine];
+        } else if (lineNum) {
+            // 다른 형태의 호선 정보도 그대로 사용
+            subwayLines = [lineNum];
+        }
     }
 
     return (
         <Container>
-            <Header name="텔레토비" station={{ name: '성수역', line: ['2','3','4'] }} />
-            <MyProfile name="텔레토비" isDone={true} setIsEditing={setIsEditing} />
+            <Header name={meetingData?.name || ""} station={{ name: midpointName, line: subwayLines }} />
+            <MyProfile 
+                name={myParticipant?.name || "알 수 없음"} 
+                isDone={myParticipant?.hasVoted || false} 
+                setIsEditing={setIsEditing} 
+            />
             <Participants 
                 totalNumber={participants.length} 
                 participants={participants.map((p: ParticipantGetResponse) => ({
                     name: p.name, 
-                    isDone: false
+                    isDone: p.hasVoted
                 }))} 
             />
         </Container>

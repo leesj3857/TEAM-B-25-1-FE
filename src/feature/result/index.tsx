@@ -10,15 +10,48 @@ import VoteResult from "./feature/VoteResult";
 import Participant from "./feature/Participant";
 import { useNavigate } from "react-router-dom";
 import EditInfo from "./feature/EditInfo";
-import { updateParticipant } from "../../api";
+import { updateParticipant, getParticipants, ParticipantGetResponse } from "../../api";
 import { useInviteCode } from "../../context/inviteCodeContext";
 import { getLatLngByAddress } from "../../utils/getLng";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Result() {
   const [activeTab, setActiveTab] = useState<'result' | 'participant'>('result');
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
   const { inviteCode } = useInviteCode();
+
+  // 참가자 정보를 가져오는 쿼리
+  const { data: participants = [], refetch: refetchParticipants } = useQuery({
+    queryKey: ['participants', inviteCode],
+    queryFn: () => getParticipants(inviteCode),
+    enabled: !!inviteCode,
+    staleTime: 5 * 60 * 1000, // 5분간 데이터 유지
+  });
+
+  // 로컬스토리지에서 내 참가자 정보 가져오기
+  const getMyParticipantInfo = () => {
+    if (!inviteCode) return null;
+    
+    const storedData = localStorage.getItem(inviteCode);
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData);
+        return parsedData;
+      } catch (error) {
+        console.error('로컬스토리지 파싱 오류:', error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  // 내 참가자 정보
+  const myParticipantInfo = getMyParticipantInfo();
+  const myParticipantId = myParticipantInfo?.participantId;
+
+  // participants 중에서 나를 찾기
+  const myParticipant = participants.find((p: ParticipantGetResponse) => p.participantId === myParticipantId);
   const onSave = async (name: string, address: string, transport: string) => {
     if (!inviteCode) {
       console.error("inviteCode가 없습니다.");
@@ -37,6 +70,18 @@ export default function Result() {
         lat,
         lng
       });
+
+      // 로컬스토리지 업데이트
+      if (myParticipantInfo) {
+        const updatedInfo = {
+          ...myParticipantInfo,
+          participantName: name
+        };
+        localStorage.setItem(inviteCode, JSON.stringify(updatedInfo));
+      }
+
+      // 참가자 데이터 새로고침
+      refetchParticipants();
       
       // 성공적으로 저장되면 편집 모드 종료
       setIsEditing(false);
@@ -65,9 +110,9 @@ export default function Result() {
       {isEditing && (
         <Body>
           <EditInfo 
-            name="텔레토비" 
-            address="서울시 성동구 왕십리로 100" 
-            transport="public" 
+            name={myParticipant?.name || ""} 
+            address={myParticipantInfo?.address || ""} 
+            transport={myParticipantInfo?.transportType || "PUBLIC"} 
             onSave={onSave} 
             onCancel={() => setIsEditing(false)} 
           />
@@ -104,7 +149,11 @@ export default function Result() {
             </>
           )}
           {activeTab === 'participant' && (
-            <Participant setIsEditing={setIsEditing}/>
+            <Participant 
+              setIsEditing={setIsEditing}
+              participants={participants}
+              myParticipant={myParticipant}
+            />
           )}
         </Body>
       )}

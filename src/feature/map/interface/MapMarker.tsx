@@ -36,14 +36,14 @@ const MapMarker = ({
     if (!naver?.maps || !map) return;
 
     const markerHtml = document.createElement("div");
-    markerHtml.style.width = "35px";
-    markerHtml.style.height = "35px";
+    markerHtml.style.width = "28px";
+    markerHtml.style.height = "28px";
     markerHtml.style.background = "#7A87FF";
     markerHtml.style.borderRadius = "50%";
     markerHtml.style.display = "flex";
     markerHtml.style.alignItems = "center";
     markerHtml.style.justifyContent = "center";
-    markerHtml.style.padding = "9px 9.75px";
+    markerHtml.style.padding = "7px 7.5px";
     markerHtml.style.transition =
       "transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease";
     markerHtml.style.transform = "scale(1)";
@@ -59,7 +59,7 @@ const MapMarker = ({
     const marker = new naver.maps.Marker({
       position: new naver.maps.LatLng(lat, lng),
       map,
-      icon: { content: markerHtml, anchor: new naver.maps.Point(17.5, 17.5) },
+      icon: { content: markerHtml, anchor: new naver.maps.Point(14, 14) },
       zIndex: 0,
     });
 

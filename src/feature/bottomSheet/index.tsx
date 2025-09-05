@@ -16,12 +16,16 @@ export default function BottomSheet({
   places = [], // ← 기본값 []
   selectedIndex,
   onSelectPlace,
+  onVote,
+  onClearSelection,
 }: {
   mode: "hide" | "half" | "full";
   setMode: (mode: "hide" | "half" | "full") => void;
   places?: MapPlace[]; // ← optional
   selectedIndex: number | null;
   onSelectPlace: (idx: number) => void;
+  onVote?: (placeIndex: number) => void;
+  onClearSelection?: () => void;
 }) {
   const [selectedCategory, setSelectedCategory] = useState("맛집");
   const [isDragging, setIsDragging] = useState(false);
@@ -129,10 +133,14 @@ export default function BottomSheet({
     },
     [isDragging, currentY, startY, mode, setMode]
   );
-
+  
   const onClose = () => {
     setSelectedPlace(null);
     setMode("half");
+    // 상위 컴포넌트에서 selectedIndex도 초기화
+    if (onClearSelection) {
+      onClearSelection();
+    }
   };
 
   return (
@@ -153,7 +161,13 @@ export default function BottomSheet({
             name={selectedPlace.name}
             rating={selectedPlace.rating}
             time={selectedPlace.time}
-            onClickVote={() => {}}
+            votedByMe={selectedIndex !== null ? places[selectedIndex]?.votedByMe || false : false}
+            url={selectedIndex !== null ? places[selectedIndex]?.url : undefined}
+            onClickVote={() => {
+              if (selectedIndex !== null && onVote) {
+                onVote(selectedIndex);
+              }
+            }}
             onClose={onClose}
           />
         )}
@@ -219,7 +233,12 @@ export default function BottomSheet({
                   });
                   setMode("hide");
                 }}
-                isVoted={false}
+                isVoted={p.votedByMe || false}
+                onClickVote={() => {
+                  if (onVote) {
+                    onVote(index);
+                  }
+                }}
               />
               {index !== places.length - 1 && <PlaceDivider />}
             </Fragment>

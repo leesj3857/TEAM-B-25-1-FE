@@ -7,10 +7,12 @@ import { Icon } from '@mdi/react';
 import { secondary } from '../../../styles/colors/secondary';
 import { primary } from '../../../styles/colors/primary';
  
-export default function Place({name, time, imageList, onClick, isVoted}: {name: string, time: number, imageList: string[], onClick: () => void, isVoted: boolean}) {
-    const onClickVote = (e: React.MouseEvent<HTMLButtonElement>) => {
+export default function Place({name, time, imageList, onClick, isVoted, onClickVote}: {name: string, time: number, imageList: string[], onClick: () => void, isVoted: boolean, onClickVote?: () => void}) {
+    const handleVoteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
-        console.log('투표하기');
+        if (onClickVote) {
+            onClickVote();
+        }
     }
 
     return (
@@ -24,7 +26,7 @@ export default function Place({name, time, imageList, onClick, isVoted}: {name: 
                     <Icon path={mdiChevronRight} size={1} color={grayscale[60]} />
                 </PlaceInfo>
                 <Vote>
-                    <VoteButton onClick={(e) => onClickVote(e)} isVoted={isVoted}>
+                    <VoteButton onClick={handleVoteClick} isVoted={isVoted}>
                         {isVoted ?  <><Icon path={mdiCheckCircleOutline} size={0.8} /> 투표완료</> : '투표하기'}
                     </VoteButton>
                 </Vote>

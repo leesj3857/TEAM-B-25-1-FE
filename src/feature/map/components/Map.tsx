@@ -3,18 +3,25 @@ import { useMap } from "../hooks/useMap";
 import MapMarker from "../interface/MapMarker";
 import styled from "@emotion/styled";
 import BottomSheet from "../../bottomSheet";
-import {
-  makeDummyPlaces,
-  type MapPlace /* adaptPlacesFromApi */,
-} from "../types/marker";
-// import { getPlaces } from "../../../api"; // 실제 API 붙일 때 주석 해제
+import { type MapPlace } from "../types/marker";
+import { votePlace } from "../../../api/vote";
+import { useInviteCode } from "../../../context/inviteCodeContext";
+import { useQueryClient } from "@tanstack/react-query";
+import ParticipantMarker from "../interface/ParticipantMarker";
+import { ParticipantGetResponse } from "../../../api/participant";
+import { createRoot } from "react-dom/client";
 
-
-const MapPage = ({mode, setMode}: {mode: 'hide' | 'half' | 'full', setMode: (mode: 'hide' | 'half' | 'full') => void}) => {
+const MapPage = ({mode, setMode, places, participants}: {
+  mode: 'hide' | 'half' | 'full', 
+  setMode: (mode: 'hide' | 'half' | 'full') => void,
+  places: MapPlace[],
+  participants: ParticipantGetResponse[]
+}) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const { map /*, markerData*/ } = useMap(mapRef); // markerData는 더 이상 사용하지 않음
+  const { inviteCode } = useInviteCode();
+  const queryClient = useQueryClient();
 
-  const [places, setPlaces] = useState<MapPlace[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // 각 마커를 제어할 수 있는 작은 API 보관 (focus, 좌표)
@@ -38,17 +45,28 @@ const MapPage = ({mode, setMode}: {mode: 'hide' | 'half' | 'full', setMode: (mod
     []
   );
 
-  // ① 장소 데이터 로드 (지금은 더미, 나중에 API로 교체)
-  useEffect(() => {
-    // 더미 데이터
-    setPlaces(makeDummyPlaces(10));
 
-    // 실제 API로 바꿀 때:
-    // (async () => {
-    //   const res = await getPlaces(inviteCode); // inviteCode를 상위에서 prop으로 받는다면 사용
-    //   setPlaces(adaptPlacesFromApi(res.data ?? []));
-    // })();
-  }, []);
+  // ① 지도 자동 포커스 - 마커들이 모두 로드된 후 실행
+  useEffect(() => {
+    if (!map || places.length === 0) return;
+
+    const naver = (window as any).naver;
+    if (!naver?.maps) return;
+
+    // 모든 마커의 좌표를 포함하는 영역 계산
+    const bounds = new naver.maps.LatLngBounds();
+    places.forEach(place => {
+      bounds.extend(new naver.maps.LatLng(place.lat, place.lng));
+    });
+
+    // 지도를 해당 영역에 맞게 조정
+    map.fitBounds(bounds, {
+      top: 100,    // 상단 여백 (헤더 고려)
+      right: 50,   // 우측 여백
+      bottom: 300, // 하단 여백 (바텀시트 고려)
+      left: 50     // 좌측 여백
+    });
+  }, [map, places]);
 
   // ② 공통 포커스: 선택 → 맵 이동 → 마커 살짝 확대 → 시트 모드 변경
   const focusToIndex = useCallback(
@@ -86,6 +104,43 @@ const MapPage = ({mode, setMode}: {mode: 'hide' | 'half' | 'full', setMode: (mod
     [focusToIndex]
   );
 
+  // 선택 해제 함수
+  const handleClearSelection = useCallback(() => {
+    setSelectedIndex(null);
+  }, []);
+
+  // 투표 처리 함수
+  const handleVote = useCallback(async (placeIndex: number) => {
+    if (!inviteCode || !places[placeIndex] || !places[placeIndex].slotNo) return;
+
+    try {
+      const place = places[placeIndex];
+      const response = await votePlace(inviteCode, { slotNo: place.slotNo! });
+      
+      // 투표 결과에 따라 places 상태 업데이트
+      const updatedPlaces = places.map((p, idx) => {
+        // 현재 투표한 장소의 상태 업데이트
+        if (idx === placeIndex) {
+          const patch = response.patches.find(patch => patch.slotNo === p.slotNo);
+          return { ...p, votedByMe: patch ? patch.votedByMe : p.votedByMe };
+        }
+        
+        // 다른 장소들도 myVoteSlotNos에 따라 상태 업데이트
+        const isVotedByMe = p.slotNo ? response.myVoteSlotNos.includes(p.slotNo) : false;
+        return { ...p, votedByMe: isVotedByMe };
+      });
+      
+      // places는 이제 props이므로 직접 수정할 수 없음
+      // 대신 쿼리 캐시 무효화로 상위 컴포넌트에서 데이터 새로고침
+      
+      // 쿼리 캐시 무효화하여 최신 데이터 동기화
+      queryClient.invalidateQueries({ queryKey: ['places', inviteCode] });
+      
+    } catch (error) {
+      console.error('투표 처리 실패:', error);
+    }
+  }, [inviteCode, places, queryClient]);
+
   return (
     <Container>
       <MapContainer ref={mapRef} />
@@ -106,15 +161,120 @@ const MapPage = ({mode, setMode}: {mode: 'hide' | 'half' | 'full', setMode: (mod
           />
         ))}
 
+      {map &&
+        participants.map((participant, i) => (
+          <ParticipantMarkerWrapper
+            key={`participant-${participant.participantId}`}
+            map={map}
+            lat={participant.lat}
+            lng={participant.lng}
+            participant={participant}
+            colorIndex={i}
+          />
+        ))}
+
       <BottomSheet
         mode={mode}
         setMode={setMode}
         places={places}
         selectedIndex={selectedIndex}
         onSelectPlace={handlePlaceClickFromSheet}
+        onVote={handleVote}
+        onClearSelection={handleClearSelection}
       />
     </Container>
   );
+};
+
+// 참가자 마커를 네이버 지도에 렌더링하는 컴포넌트
+interface ParticipantMarkerWrapperProps {
+  map: any;
+  lat: number;
+  lng: number;
+  participant: ParticipantGetResponse;
+  colorIndex: number;
+}
+
+const ParticipantMarkerWrapper = ({ map, lat, lng, participant, colorIndex }: ParticipantMarkerWrapperProps) => {
+  const markerRef = useRef<any>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!map) return;
+
+    const naver = (window as any).naver;
+    if (!naver?.maps) return;
+
+    // HTML 오버레이로 참가자 마커 생성
+    const overlay = new naver.maps.OverlayView();
+    
+    overlay.onAdd = function() {
+      const layer = this.getPanes().overlayLayer;
+      
+      // 마커 컨테이너 생성
+      const markerContainer = document.createElement('div');
+      markerContainer.style.position = 'absolute';
+      markerContainer.style.transform = 'translate(-50%, -100%)';
+      markerContainer.style.zIndex = '1000';
+      
+      // React 컴포넌트를 렌더링할 div 생성
+      const markerDiv = document.createElement('div');
+      markerContainer.appendChild(markerDiv);
+      
+      // React 컴포넌트 렌더링
+      const root = createRoot(markerDiv);
+      root.render(
+        <ParticipantMarker 
+          name={participant.name} 
+          colorIndex={colorIndex}
+          position={{ lat, lng }}
+        />
+      );
+      
+      layer.appendChild(markerContainer);
+      overlayRef.current = markerContainer;
+      markerRef.current = { overlay, root };
+    };
+
+    overlay.onRemove = function() {
+      if (overlayRef.current) {
+        overlayRef.current.remove();
+      }
+      if (markerRef.current?.root) {
+        // React 렌더링 사이클과 충돌을 피하기 위해 비동기로 언마운트
+        setTimeout(() => {
+          markerRef.current?.root?.unmount();
+        }, 0);
+      }
+    };
+
+    overlay.draw = function() {
+      if (!overlayRef.current) return;
+      
+      const projection = this.getProjection();
+      const position = new naver.maps.LatLng(lat, lng);
+      const pixelPosition = projection.fromCoordToOffset(position);
+      
+      overlayRef.current.style.left = pixelPosition.x + 'px';
+      overlayRef.current.style.top = pixelPosition.y + 'px';
+    };
+
+    overlay.setMap(map);
+
+    return () => {
+      if (markerRef.current) {
+        markerRef.current.overlay.setMap(null);
+        if (markerRef.current.root) {
+          // React 렌더링 사이클과 충돌을 피하기 위해 비동기로 언마운트
+          setTimeout(() => {
+            markerRef.current?.root?.unmount();
+          }, 0);
+        }
+      }
+    };
+  }, [map, lat, lng, participant.name, colorIndex]);
+
+  return null;
 };
 
 export default MapPage;

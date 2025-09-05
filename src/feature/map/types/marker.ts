@@ -14,6 +14,10 @@ export interface MapPlace {
   time: number; // 더미
   imageList: string[]; // 더미
   iconUrl: string; // 카테고리별 아이콘 or 기본 아이콘
+  slotNo?: number; // 투표용 슬롯 번호
+  votedByMe?: boolean; // 내가 투표했는지 여부
+  address?: string; // 주소
+  url?: string; // 카카오맵 URL
 }
 
 const iconByCategory = (c?: string): string => {

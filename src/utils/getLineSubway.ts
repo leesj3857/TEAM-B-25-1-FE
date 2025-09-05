@@ -6,9 +6,7 @@ export const getSubwayStationInfo = async (stationName: string): Promise<any> =>
     const API_KEY = '727a4e70496c65653439624444764d'; // 서울 열린데이터광장에서 발급받은 인증키
     
     const url = `http://openapi.seoul.go.kr:8088/${API_KEY}/json/SearchSTNBySubwayLineInfo/1/5/ /${stationName}`;
-    console.log(url);
     const response = await axios.get(url);
-    console.log(response)
     if (!response.status) {
       throw new Error(`API 요청 실패: ${response.status}`);
     }
@@ -25,7 +23,6 @@ export const getSubwayStationInfo = async (stationName: string): Promise<any> =>
 export const getLineSubwayFromAPI = async (stationName: string): Promise<string[]> => {
   try {
     const jsonData = await getSubwayStationInfo(stationName);
-    console.log(jsonData, 'jsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAajsonDATAa');
     if (jsonData.SearchSTNBySubwayLineInfo && jsonData.SearchSTNBySubwayLineInfo.row) {
       const rows = jsonData.SearchSTNBySubwayLineInfo.row;
       if (Array.isArray(rows) && rows.length > 0) {
@@ -39,7 +36,6 @@ export const getLineSubwayFromAPI = async (stationName: string): Promise<string[
         });
         // 중복 제거
         const uniqueLineNumbers = Array.from(new Set(lineNumbers));
-        console.log('추출된 호선 번호들:', uniqueLineNumbers);
         return uniqueLineNumbers;
       }
     }

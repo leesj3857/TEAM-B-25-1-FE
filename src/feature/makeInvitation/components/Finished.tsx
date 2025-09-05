@@ -46,7 +46,6 @@ export default function Finished({ onComplete, userInfo }: { onComplete?: () => 
               lat,
               lng,
             } as Participant);
-            console.log(participant);
             if (participant && participant.participantId) {
               localStorage.setItem(res.linkCode as string, JSON.stringify(participant));
             }
@@ -89,7 +88,7 @@ export default function Finished({ onComplete, userInfo }: { onComplete?: () => 
   return (
     <Container>
       {isLoading ? (
-        <FetchingAnimation />
+        <FetchingAnimation text="초대장을 만들고 있어요..." />
       ) : (
         <>
       <HeaderRow>

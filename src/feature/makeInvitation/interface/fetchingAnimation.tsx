@@ -4,10 +4,10 @@ import fetchingAnimation from '../../../../public/animation/fetching_v1.json';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { typography } from '../../../styles/typography';
 
-export default function FetchingAnimation() {
+export default function FetchingAnimation({text}: {text: string} = {text: '초대장을 만들고 있어요...'}) {
   return (
     <Container>
-      <LoadingText>초대장을 만들고 있어요...</LoadingText>
+      <LoadingText>{text}</LoadingText>
       <LottieWrapper>
         <Lottie animationData={fetchingAnimation} loop />
       </LottieWrapper>

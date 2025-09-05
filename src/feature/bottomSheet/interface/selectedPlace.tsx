@@ -2,15 +2,20 @@ import styled from "@emotion/styled";
 import { button } from "../../../styles/button";
 import { grayscale } from "../../../styles/colors/grayscale";
 import { applyTypography } from "../../../styles/typography";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Icon } from "@mdi/react";
 import { mdiCheckCircleOutline, mdiMapSearch } from "@mdi/js";
 import { secondary } from "../../../styles/colors/secondary";
 import { css } from "@emotion/react";
 import { primary } from "../../../styles/colors/primary";
 
-export default function SelectedPlace({name, rating, time, onClickVote, onClose}: {name: string, rating: number, time: number, onClickVote: () => void, onClose: () => void}) {
-    const [isVoted, setIsVoted] = useState(false);
+export default function SelectedPlace({name, rating, time, votedByMe = false, onClickVote, onClose, url}: {name: string, rating: number, time: number, votedByMe?: boolean, onClickVote: () => void, onClose: () => void, url?: string}) {
+    const [isVoted, setIsVoted] = useState(votedByMe);
+    
+    // votedByMe가 변경되면 isVoted 상태도 업데이트
+    useEffect(() => {
+        setIsVoted(votedByMe);
+    }, [votedByMe]);
     const [isDragging, setIsDragging] = useState(false);
     const [startY, setStartY] = useState(0);
     const [currentY, setCurrentY] = useState(0);
@@ -74,13 +79,17 @@ export default function SelectedPlace({name, rating, time, onClickVote, onClose}
                         {name}
                     </PlaceName>
                 </PlaceInfoRight>
-                <MapButton>
+                <MapButton onClick={() => {
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                }}>
                     <Icon path={mdiMapSearch} size={1} color={primary[30]} />
                 </MapButton>
             </PlaceInfo>
             <Vote>
                     <VoteButton onClick={() => {
-                        setIsVoted(true);
+                        setIsVoted(!isVoted);
                         onClickVote();
                     }} isVoted={isVoted}>
                         {isVoted ? <><Icon path={mdiCheckCircleOutline} size={1} /> 투표완료</> : '투표하기'}
