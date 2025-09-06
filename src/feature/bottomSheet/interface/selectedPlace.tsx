@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { button } from "../../../styles/button";
 import { grayscale } from "../../../styles/colors/grayscale";
 import { applyTypography } from "../../../styles/typography";
 import { useState, useCallback, useEffect } from "react";
@@ -9,7 +8,7 @@ import { secondary } from "../../../styles/colors/secondary";
 import { css } from "@emotion/react";
 import { primary } from "../../../styles/colors/primary";
 
-export default function SelectedPlace({name, rating, time, votedByMe = false, onClickVote, onClose, url}: {name: string, rating: number, time: number, votedByMe?: boolean, onClickVote: () => void, onClose: () => void, url?: string}) {
+export default function SelectedPlace({name, votedByMe = false, onClickVote, onClose, url}: {name: string, votedByMe?: boolean, onClickVote: () => void, onClose: () => void, url?: string}) {
     const [isVoted, setIsVoted] = useState(votedByMe);
     
     // votedByMe가 변경되면 isVoted 상태도 업데이트

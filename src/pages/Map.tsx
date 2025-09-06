@@ -34,14 +34,12 @@ const adaptPlacesFromApi = (sections: PlaceSection[]): MapPlace[] => {
         lat: item.latitude,
         lng: item.longitude,
         iconUrl,
-        rating: 4.5, // API에서 제공하지 않으므로 기본값
-        time: 10, // API에서 제공하지 않으므로 기본값
-        imageList: [], // API에서 제공하지 않으므로 빈 배열
         slotNo: item.slotNo,
         votedByMe: item.votedByMe,
         category: section.key,
         address: item.address,
-        url: item.url
+        url: item.url,
+        label: section.label
       });
     });
   });

@@ -10,14 +10,12 @@ export interface MapPlace {
   lat: number;
   lng: number;
   category?: string;
-  rating: number; // 더미
-  time: number; // 더미
-  imageList: string[]; // 더미
   iconUrl: string; // 카테고리별 아이콘 or 기본 아이콘
   slotNo?: number; // 투표용 슬롯 번호
   votedByMe?: boolean; // 내가 투표했는지 여부
   address?: string; // 주소
   url?: string; // 카카오맵 URL
+  label?: string; // 카테고리 라벨
 }
 
 const iconByCategory = (c?: string): string => {
@@ -56,6 +54,7 @@ export type PlaceApiRow = {
   category?: string;
   latitude: number;
   longitude: number;
+  label?: string;
 };
 
 export const adaptPlacesFromApi = (rows: PlaceApiRow[] = []): MapPlace[] =>
@@ -65,14 +64,8 @@ export const adaptPlacesFromApi = (rows: PlaceApiRow[] = []): MapPlace[] =>
     category: p.category,
     lat: Number(p.latitude),
     lng: Number(p.longitude),
-    rating: Math.round(Math.random() * 20) / 4, // 0~5 (0.25 step) 더미
-    time: 10 + Math.floor(Math.random() * 40), // 10~50 더미
-    imageList: [
-      `https://picsum.photos/240?random=${i * 3 + 1}`,
-      `https://picsum.photos/240?random=${i * 3 + 2}`,
-      `https://picsum.photos/240?random=${i * 3 + 3}`,
-    ],
     iconUrl: iconByCategory(p.category),
+    label: p.label,
   }));
 
 // 지금은 더미로 시작하려면 이 함수 사용
@@ -83,12 +76,6 @@ export const makeDummyPlaces = (n = 10): MapPlace[] =>
     lat: 37.5665 + (Math.random() - 0.5) * 0.02,
     lng: 126.978 + (Math.random() - 0.5) * 0.02,
     category: "맛집",
-    rating: Math.round(Math.random() * 20) / 4,
-    time: 10 + Math.floor(Math.random() * 40),
-    imageList: [
-      `https://picsum.photos/240?random=${i * 3 + 1}`,
-      `https://picsum.photos/240?random=${i * 3 + 2}`,
-      `https://picsum.photos/240?random=${i * 3 + 3}`,
-    ],
     iconUrl: "/icons/food.svg",
+    label: "맛집",
   }));

@@ -18,6 +18,8 @@ export default function BottomSheet({
   onSelectPlace,
   onVote,
   onClearSelection,
+  selectedCategory,
+  setSelectedCategory,
 }: {
   mode: "hide" | "half" | "full";
   setMode: (mode: "hide" | "half" | "full") => void;
@@ -26,8 +28,9 @@ export default function BottomSheet({
   onSelectPlace: (idx: number) => void;
   onVote?: (placeIndex: number) => void;
   onClearSelection?: () => void;
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
 }) {
-  const [selectedCategory, setSelectedCategory] = useState("맛집");
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
   const [currentY, setCurrentY] = useState(0);
@@ -35,8 +38,6 @@ export default function BottomSheet({
   const slideBarRef = useRef<HTMLDivElement>(null);
   const [selectedPlace, setSelectedPlace] = useState<{
     name: string;
-    rating: number;
-    time: number;
   } | null>(null);
   const touchStartTime = useRef<number>(0);
   const touchStartX = useRef<number>(0);
@@ -48,7 +49,7 @@ export default function BottomSheet({
     if (!Array.isArray(places)) return;
     const p = places[selectedIndex];
     if (!p) return;
-    setSelectedPlace({ name: p.name, rating: p.rating, time: p.time });
+    setSelectedPlace({ name: p.name });
     setMode("hide"); // 카드가 목록 위(시트 바깥)에 뜨는 UX 유지
   }, [selectedIndex, places, setMode]);
 
@@ -66,7 +67,7 @@ export default function BottomSheet({
     const moveY = Math.abs(endY - touchStartYRef.current);
 
     if (timeDiff < 200 && moveX < 10 && moveY < 10) {
-      setSelectedCategory(category);
+      setSelectedCategory(category as string);
     }
   };
 
@@ -159,8 +160,6 @@ export default function BottomSheet({
         {mode === "hide" && selectedPlace !== null && (
           <SelectedPlace
             name={selectedPlace.name}
-            rating={selectedPlace.rating}
-            time={selectedPlace.time}
             votedByMe={selectedIndex !== null ? places[selectedIndex]?.votedByMe || false : false}
             url={selectedIndex !== null ? places[selectedIndex]?.url : undefined}
             onClickVote={() => {
@@ -190,7 +189,7 @@ export default function BottomSheet({
             selected={selectedCategory === "맛집"}
             onClick={() => setSelectedCategory("맛집")}
             onTouchStart={handleItemTouchStart}
-            onTouchEnd={(e) => handleItemTouchEnd(e, "맛집")}
+            onTouchEnd={(e) => handleItemTouchEnd(e, "맛집" as string)}
           >
             <Icon
               path={mdiSilverwareForkKnife}
@@ -204,7 +203,7 @@ export default function BottomSheet({
             selected={selectedCategory === "놀거리"}
             onClick={() => setSelectedCategory("놀거리")}
             onTouchStart={handleItemTouchStart}
-            onTouchEnd={(e) => handleItemTouchEnd(e, "놀거리")}
+            onTouchEnd={(e) => handleItemTouchEnd(e, "놀거리" as string)}
           >
             <Icon
               path={mdiTicket}
@@ -222,14 +221,10 @@ export default function BottomSheet({
             <Fragment key={p.id}>
               <Place
                 name={p.name}
-                time={p.time}
-                imageList={p.imageList}
                 onClick={() => {
                   onSelectPlace(index);
                   setSelectedPlace({
                     name: p.name,
-                    rating: p.rating,
-                    time: p.time,
                   });
                   setMode("hide");
                 }}

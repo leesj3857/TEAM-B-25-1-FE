@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
 import { useMap } from "../hooks/useMap";
 import MapMarker from "../interface/MapMarker";
 import styled from "@emotion/styled";
@@ -18,11 +18,37 @@ const MapPage = ({mode, setMode, places, participants}: {
   participants: ParticipantGetResponse[]
 }) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const { map /*, markerData*/ } = useMap(mapRef); // markerData는 더 이상 사용하지 않음
+  const { map } = useMap({ mapRef, places, participants });
   const { inviteCode } = useInviteCode();
   const queryClient = useQueryClient();
-
+  const [selectedCategory, setSelectedCategory] = useState("맛집");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const filteredPlaces = useMemo(() => {
+    return places.filter(p => p.label === selectedCategory);
+  }, [places, selectedCategory]);
+
+  // filteredPlaces가 바뀔 때마다 지도 범위 업데이트
+  useEffect(() => {
+    if (!map || filteredPlaces.length === 0) return;
+
+    const naver = (window as any).naver;
+    if (!naver?.maps) return;
+
+    // 필터링된 마커들의 좌표를 포함하는 영역 계산
+    const bounds = new naver.maps.LatLngBounds();
+    filteredPlaces.forEach(place => {
+      bounds.extend(new naver.maps.LatLng(place.lat, place.lng));
+    });
+
+    // 지도를 해당 영역에 맞게 조정
+    map.fitBounds(bounds, {
+      top: 0,    // 상단 여백
+      right: 0,   // 우측 여백
+      bottom: 0, // 하단 여백
+      left: 0     // 좌측 여백
+    });
+  }, [map, filteredPlaces]);
 
   // 각 마커를 제어할 수 있는 작은 API 보관 (focus, 좌표)
   const markerApiRef = useRef<
@@ -46,27 +72,6 @@ const MapPage = ({mode, setMode, places, participants}: {
   );
 
 
-  // ① 지도 자동 포커스 - 마커들이 모두 로드된 후 실행
-  useEffect(() => {
-    if (!map || places.length === 0) return;
-
-    const naver = (window as any).naver;
-    if (!naver?.maps) return;
-
-    // 모든 마커의 좌표를 포함하는 영역 계산
-    const bounds = new naver.maps.LatLngBounds();
-    places.forEach(place => {
-      bounds.extend(new naver.maps.LatLng(place.lat, place.lng));
-    });
-
-    // 지도를 해당 영역에 맞게 조정
-    map.fitBounds(bounds, {
-      top: 100,    // 상단 여백 (헤더 고려)
-      right: 50,   // 우측 여백
-      bottom: 300, // 하단 여백 (바텀시트 고려)
-      left: 50     // 좌측 여백
-    });
-  }, [map, places]);
 
   // ② 공통 포커스: 선택 → 맵 이동 → 마커 살짝 확대 → 시트 모드 변경
   const focusToIndex = useCallback(
@@ -111,14 +116,14 @@ const MapPage = ({mode, setMode, places, participants}: {
 
   // 투표 처리 함수
   const handleVote = useCallback(async (placeIndex: number) => {
-    if (!inviteCode || !places[placeIndex] || !places[placeIndex].slotNo) return;
+    if (!inviteCode || !filteredPlaces[placeIndex] || !filteredPlaces[placeIndex].slotNo) return;
 
     try {
-      const place = places[placeIndex];
+      const place = filteredPlaces[placeIndex];
       const response = await votePlace(inviteCode, { slotNo: place.slotNo! });
       
       // 투표 결과에 따라 places 상태 업데이트
-      const updatedPlaces = places.map((p, idx) => {
+      const updatedPlaces = filteredPlaces.map((p, idx) => {
         // 현재 투표한 장소의 상태 업데이트
         if (idx === placeIndex) {
           const patch = response.patches.find(patch => patch.slotNo === p.slotNo);
@@ -139,14 +144,14 @@ const MapPage = ({mode, setMode, places, participants}: {
     } catch (error) {
       console.error('투표 처리 실패:', error);
     }
-  }, [inviteCode, places, queryClient]);
+  }, [inviteCode, filteredPlaces, queryClient]);
 
   return (
     <Container>
       <MapContainer ref={mapRef} />
 
       {map &&
-        places.map((p, i) => (
+        filteredPlaces.map((p, i) => (
           <MapMarker
             key={p.id}
             id={p.id}
@@ -176,11 +181,13 @@ const MapPage = ({mode, setMode, places, participants}: {
       <BottomSheet
         mode={mode}
         setMode={setMode}
-        places={places}
+        places={filteredPlaces}
         selectedIndex={selectedIndex}
         onSelectPlace={handlePlaceClickFromSheet}
         onVote={handleVote}
         onClearSelection={handleClearSelection}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
       />
     </Container>
   );

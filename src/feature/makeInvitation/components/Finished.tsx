@@ -40,7 +40,7 @@ export default function Finished({ onComplete, userInfo }: { onComplete?: () => 
           if (res && typeof res === 'object' && 'linkCode' in res) {
             setMeeting(res as CreateMeetingResponse);
             const participant = await registerParticipant(res.linkCode as string, {
-              name: userInfo.name!,
+              name: userInfo.hostName!,
               address: userInfo.address!,
               transportType: userInfo.transport!,
               lat,

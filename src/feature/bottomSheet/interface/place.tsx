@@ -1,13 +1,12 @@
 import styled from '@emotion/styled';
 import { grayscale } from '../../../styles/colors/grayscale';
 import { applyTypography } from '../../../styles/typography';
-import { button } from '../../../styles/button';
 import { mdiCheckCircleOutline, mdiChevronRight } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { secondary } from '../../../styles/colors/secondary';
 import { primary } from '../../../styles/colors/primary';
  
-export default function Place({name, time, imageList, onClick, isVoted, onClickVote}: {name: string, time: number, imageList: string[], onClick: () => void, isVoted: boolean, onClickVote?: () => void}) {
+export default function Place({name, onClick, isVoted, onClickVote}: {name: string, onClick: () => void, isVoted: boolean, onClickVote?: () => void}) {
     const handleVoteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         if (onClickVote) {
@@ -44,6 +43,7 @@ const TopContainer = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
+    gap: 10px;
 `;
 
 const PlaceInfo = styled.div`
