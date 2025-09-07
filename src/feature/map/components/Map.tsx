@@ -49,9 +49,11 @@ const MapPage = ({mode, setMode, places, participants, refetchPlaces, refetchMid
       const { lat, lng } = api.getLatLng();
       const naver = (window as any).naver;
       
-      // 즉시 지도 이동 (애니메이션 없이 빠른 이동)
-      map.setCenter(new naver.maps.LatLng(lat, lng));
-      api.focus();
+      // 지도 이동을 약간 지연시켜 마커 API가 준비될 시간을 줌
+      setTimeout(() => {
+        map.panTo(new naver.maps.LatLng(lat, lng));
+        api.focus();
+      }, 50);
     },
     [map, setMode]
   );
