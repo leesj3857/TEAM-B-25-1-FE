@@ -42,15 +42,25 @@ export default function BottomSheet({
   const touchStartTime = useRef<number>(0);
   const touchStartX = useRef<number>(0);
   const touchStartYRef = useRef<number>(0);
+  const prevSelectedIndexRef = useRef<number | null>(null);
 
   // 마커 클릭으로 selectedIndex가 바뀌면 카드 자동 노출 (가드 포함)
   useEffect(() => {
-    if (selectedIndex == null) return;
+    if (selectedIndex == null) {
+      prevSelectedIndexRef.current = null;
+      return;
+    }
     if (!Array.isArray(places)) return;
     const p = places[selectedIndex];
     if (!p) return;
+    
     setSelectedPlace({ name: p.name });
-    setMode("hide"); // 카드가 목록 위(시트 바깥)에 뜨는 UX 유지
+    
+    // selectedIndex가 처음 설정되거나 변경된 경우에만 hide 모드로 변경
+    if (prevSelectedIndexRef.current !== selectedIndex) {
+      setMode("hide"); // 카드가 목록 위(시트 바깥)에 뜨는 UX 유지
+      prevSelectedIndexRef.current = selectedIndex;
+    }
   }, [selectedIndex, places, setMode]);
 
   const handleItemTouchStart = (e: React.TouchEvent) => {
@@ -216,7 +226,7 @@ export default function BottomSheet({
           </CategoryItem>
         </CategoryContainer>
 
-        <PlaceContainer mode={mode}>
+        <PlaceContainer mode={mode} style={{touchAction: "pan-y"}}>
           {(places ?? []).map((p, index) => (
             <Fragment key={p.id}>
               <Place
@@ -349,7 +359,8 @@ const PlaceDivider = styled.div`
 const PlaceContainer = styled.div<{ mode: "hide" | "half" | "full" }>`
   background-color: #fff;
   width: 100%;
-  flex: 1;
+  height: ${({ mode }) => (mode === "half" ? "calc(100% - 300px)" : mode === "full" ? "100%" : "auto")};
+  ${({ mode }) => mode !== "half" && "flex: 1;"}
   overflow-y: ${({ mode }) => (mode === "hide" ? "hidden" : "auto")};
   padding-bottom: 10px;
   z-index: 1000;

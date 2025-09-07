@@ -13,7 +13,7 @@ export interface VoteResponse {
   }[];
 }
 
-export type VoteResultResponse = PlaceItem[];
+export type VoteResultResponse = (PlaceItem & { voteCount: number })[];
 
 export const votePlace = async (
   inviteCode: string,

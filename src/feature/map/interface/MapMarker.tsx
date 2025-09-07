@@ -30,7 +30,7 @@ const MapMarker = ({
   const markerRef = useRef<any>(null);
   const elRef = useRef<HTMLDivElement | null>(null);
 
-  // 마커 생성
+  // 마커 생성 (위치 변경 시 재생성 방지)
   useEffect(() => {
     const naver = (window as any).naver;
     if (!naver?.maps || !map) return;
@@ -93,7 +93,7 @@ const MapMarker = ({
       marker.setMap(null);
       onUnmount?.();
     };
-  }, [map, lat, lng, iconUrl, onClick, onMount, onUnmount, selected]);
+  }, [map, iconUrl, onClick, onMount, onUnmount]); // lat, lng, selected 의존성 제거
 
   // 선택 상태 변화 시 스타일 업데이트
   useEffect(() => {
@@ -111,6 +111,16 @@ const MapMarker = ({
       markerRef.current.setZIndex(0);
     }
   }, [selected]);
+
+  // 마커 위치 업데이트 (재생성 없이)
+  useEffect(() => {
+    if (!markerRef.current) return;
+    
+    const naver = (window as any).naver;
+    if (!naver?.maps) return;
+
+    markerRef.current.setPosition(new naver.maps.LatLng(lat, lng));
+  }, [lat, lng]);
 
   return null;
 };

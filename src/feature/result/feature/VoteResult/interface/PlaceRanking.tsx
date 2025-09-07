@@ -8,9 +8,13 @@ import { mdiMagnify } from '@mdi/js';
 import { button } from "../../../../../styles/button";
 import { Fragment, useState } from "react";
 import { PlaceRankingType } from "../../../type/PlaceRanking";
+import { useNavigate } from "react-router-dom";
+import { useInviteCode } from "../../../../../context/inviteCodeContext";
 
 export default function PlaceRanking({placeRanking}: {placeRanking: PlaceRankingType[]}) {
   const [showTotalResult, setShowTotalResult] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const { inviteCode } = useInviteCode();
   
   // 투표한 장소가 없는 경우
   if (!placeRanking || placeRanking.length === 0) {
@@ -24,7 +28,11 @@ export default function PlaceRanking({placeRanking}: {placeRanking: PlaceRanking
     );
   }
 
-  const placeUI = ({rank, name, count}: PlaceRankingType) => {
+  const handleMoreClick = (placeId: string) => {
+    navigate(`/map/${inviteCode}?selectedPlaceId=${placeId}`);
+  };
+
+  const placeUI = ({id, rank, name, count}: PlaceRankingType) => {
     return (
       <Container rank={rank}>
         <RankContainer>
@@ -34,7 +42,7 @@ export default function PlaceRanking({placeRanking}: {placeRanking: PlaceRanking
           <Name rank={rank}>{name}</Name>
           <Count rank={rank}>{count}명 투표</Count>
         </NameCountContainer>
-        <MoreContainer rank={rank}>
+        <MoreContainer rank={rank} onClick={() => handleMoreClick(id)}>
             <Icon path={mdiMagnify} size={1} color={rank === 1 ? grayscale[0] : secondary[50]} />
             <span>더보기</span>
         </MoreContainer>
@@ -70,12 +78,12 @@ const Container = styled.div<{rank: number}>`
   border: 1px solid ${({rank}) => rank === 1 ? secondary[10] : grayscale[50]};
   border-radius: 10px;
   margin-bottom: 12px;
+  gap: 10px;
 `;
 
 const RankContainer = styled.div`
   display: flex;
   align-items: center;
-  width: 60px;
 `;
 
 const Rank = styled.div<{rank: number}>`
@@ -103,11 +111,17 @@ const NameCountContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+  flex: 1;
+  min-width: 0;
 `;
 
 const Name = styled.div<{rank: number}>`
   ${({rank}) => rank === 1 ? applyTypography('title.medium') : applyTypography('title.small')}
   color: ${({rank}) => rank === 1 ? primary[40] : grayscale[90]};
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Count = styled.div<{rank: number}>`

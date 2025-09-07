@@ -22,37 +22,14 @@ export const useMap = ({ mapRef, places, participants }: UseMapProps) => {
 
     const naver = window.naver;
 
-    // 마커가 있는 경우 마커들에 맞춰 지도 설정
-    if (places.length > 0) {
-      const bounds = new naver.maps.LatLngBounds();
-      places.forEach(place => {
-        bounds.extend(new naver.maps.LatLng(place.lat, place.lng));
-      });
+    // 지도 인스턴스만 생성 (fitBounds는 상위 컴포넌트에서 처리)
+    const instance = new naver.maps.Map(mapRef.current, {
+      center: new naver.maps.LatLng(37.5665, 126.978), // 기본 서울 중심
+      zoom: 15,
+    });
 
-      const instance = new naver.maps.Map(mapRef.current, {
-        center: bounds.getCenter(),
-        zoom: 15,
-      });
-
-      // 마커들이 모두 보이도록 지도 조정
-      instance.fitBounds(bounds, {
-        top: 0,    // 상단 여백 (헤더 고려)
-        right: 0,   // 우측 여백
-        bottom: 0, // 하단 여백 (바텀시트 고려)
-        left: 0     // 좌측 여백
-      });
-
-      setMap(instance);
-    } else {
-      // 마커가 없는 경우 기본 설정
-      const instance = new naver.maps.Map(mapRef.current, {
-        center: new naver.maps.LatLng(37.5665, 126.978),
-        zoom: 15,
-      });
-
-      setMap(instance);
-    }
-  }, [mapRef, places]);
+    setMap(instance);
+  }, [mapRef]); // places 의존성 제거
 
   return { map };
 };

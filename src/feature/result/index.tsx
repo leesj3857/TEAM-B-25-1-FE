@@ -3,7 +3,7 @@ import { grayscale } from "../../styles/colors/grayscale";
 import Icon from '@mdi/react';
 import { mdiArrowLeft } from '@mdi/js';
 import { primary } from "../../styles/colors/primary";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { applyTypography } from "../../styles/typography";
 import { motion } from "framer-motion";
 import VoteResult from "./feature/VoteResult";
@@ -28,6 +28,10 @@ export default function Result() {
     enabled: !!inviteCode,
     staleTime: 5 * 60 * 1000, // 5분간 데이터 유지
   });
+
+  useEffect(() => {
+    refetchParticipants();
+  }, [inviteCode]);
 
   // 로컬스토리지에서 내 참가자 정보 가져오기
   const getMyParticipantInfo = () => {

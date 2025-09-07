@@ -3,7 +3,7 @@ import BottomSheet from "../feature/bottomSheet";
 import MapComponent from "../feature/map/components/Map";
 import Header from "../feature/mapHeader";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useInviteCode } from "../context/inviteCodeContext";
 import { useQuery } from "@tanstack/react-query";
 import { getPlaces, PlaceSection } from "../api/place";
@@ -50,7 +50,11 @@ const adaptPlacesFromApi = (sections: PlaceSection[]): MapPlace[] => {
 const Map = () => {
   const [mode, setMode] = useState<"hide" | "half" | "full">("hide");
   const { inviteCode: urlInviteCode } = useParams();
+  const [searchParams] = useSearchParams();
   const { setInviteCode, inviteCode } = useInviteCode();
+  
+  // URL에서 선택된 장소 ID 가져오기
+  const selectedPlaceId = searchParams.get('selectedPlaceId');
 
   useEffect(() => {
     if (urlInviteCode) {
@@ -59,7 +63,7 @@ const Map = () => {
   }, [urlInviteCode, setInviteCode]);
 
   // 장소 데이터를 가져오는 쿼리
-  const { data: placesData, isLoading: isPlacesLoading } = useQuery({
+  const { data: placesData, isLoading: isPlacesLoading, refetch: refetchPlaces } = useQuery({
     queryKey: ['places', inviteCode],
     queryFn: () => getPlaces(inviteCode),
     enabled: !!inviteCode,
@@ -67,7 +71,7 @@ const Map = () => {
   });
 
   // 중간점 데이터를 가져오는 쿼리
-  const { data: midpointData, isLoading: isMidpointLoading } = useQuery({
+  const { data: midpointData, isLoading: isMidpointLoading, refetch: refetchMidpoint } = useQuery({
     queryKey: ['midpoint', inviteCode],
     queryFn: () => getMidpoint(inviteCode, "TIME_MATRIX"),
     enabled: !!inviteCode,
@@ -75,7 +79,7 @@ const Map = () => {
   });
 
   // 미팅 정보를 가져오는 쿼리
-  const { data: meetingData, isLoading: isMeetingLoading } = useQuery({
+  const { data: meetingData, isLoading: isMeetingLoading, refetch: refetchMeeting } = useQuery({
     queryKey: ['meeting', inviteCode],
     queryFn: () => getMeeting(inviteCode),
     enabled: !!inviteCode,
@@ -83,7 +87,7 @@ const Map = () => {
   });
 
   // 참가자 정보를 가져오는 쿼리
-  const { data: participantsData, isLoading: isParticipantsLoading } = useQuery({
+  const { data: participantsData, isLoading: isParticipantsLoading, refetch: refetchParticipants } = useQuery({
     queryKey: ['participants', inviteCode],
     queryFn: () => getParticipants(inviteCode),
     enabled: !!inviteCode,
@@ -94,7 +98,7 @@ const Map = () => {
   const midpointName = midpointData?.name || "";
 
   // 호선 정보를 가져오는 쿼리
-  const { data: lineData, isLoading: isLineLoading } = useQuery({
+  const { data: lineData, isLoading: isLineLoading, refetch: refetchLine } = useQuery({
     queryKey: ['subwayLine', midpointName],
     queryFn: () => getLineSubwayFromAPI(midpointName),
     enabled: !!midpointName,
@@ -148,7 +152,18 @@ const Map = () => {
   return (
     <Container>
       <Header mode={mode} headerData={headerData} />
-      <MapComponent mode={mode} setMode={setMode} places={places} participants={participantsData || []} />
+      <MapComponent 
+        mode={mode} 
+        setMode={setMode} 
+        places={places} 
+        participants={participantsData || []} 
+        refetchPlaces={refetchPlaces} 
+        refetchMidpoint={refetchMidpoint} 
+        refetchMeeting={refetchMeeting} 
+        refetchParticipants={refetchParticipants} 
+        refetchLine={refetchLine}
+        selectedPlaceId={selectedPlaceId ? selectedPlaceId : undefined}
+      />
     </Container>
   );
 };

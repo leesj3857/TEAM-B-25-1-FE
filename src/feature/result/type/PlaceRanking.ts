@@ -1,5 +1,5 @@
 export type PlaceRankingType = {
-    id: number;
+    id: string;
     rank: number;
     name: string;
     count: number;

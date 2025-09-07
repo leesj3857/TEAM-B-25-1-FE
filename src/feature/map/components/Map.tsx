@@ -11,11 +11,17 @@ import ParticipantMarker from "../interface/ParticipantMarker";
 import { ParticipantGetResponse } from "../../../api/participant";
 import { createRoot } from "react-dom/client";
 
-const MapPage = ({mode, setMode, places, participants}: {
+const MapPage = ({mode, setMode, places, participants, refetchPlaces, refetchMidpoint, refetchMeeting, refetchParticipants, refetchLine, selectedPlaceId}: {
   mode: 'hide' | 'half' | 'full', 
   setMode: (mode: 'hide' | 'half' | 'full') => void,
   places: MapPlace[],
-  participants: ParticipantGetResponse[]
+  participants: ParticipantGetResponse[],
+  refetchPlaces: () => void,
+  refetchMidpoint: () => void,
+  refetchMeeting: () => void,
+  refetchParticipants: () => void,
+  refetchLine: () => void,
+  selectedPlaceId?: string
 }) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const { map } = useMap({ mapRef, places, participants });
@@ -23,15 +29,36 @@ const MapPage = ({mode, setMode, places, participants}: {
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState("맛집");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
+  const [hasAutoFocused, setHasAutoFocused] = useState(false);
+  const [urlSelectedPlaceId, setUrlSelectedPlaceId] = useState<string | null>(selectedPlaceId || null);
   const filteredPlaces = useMemo(() => {
     return places.filter(p => p.label === selectedCategory);
   }, [places, selectedCategory]);
+  
+  const focusToIndex = useCallback(
+    (idx: number, showOverlayOnSheet = false) => {
+      setSelectedIndex(idx);
+
+      // 마커 클릭에서 SelectedPlace 오버레이를 띄우고 싶다면 'hide'로 내리기
+      // (리스트 클릭은 BottomSheet 내부에서 이미 처리함)
+      // setMode(showOverlayOnSheet ? "hide" : "half");
+
+      const api = markerApiRef.current[idx];
+      if (!api || !map || !(window as any).naver?.maps) return;
+
+      const { lat, lng } = api.getLatLng();
+      const naver = (window as any).naver;
+      
+      // 즉시 지도 이동 (애니메이션 없이 빠른 이동)
+      map.setCenter(new naver.maps.LatLng(lat, lng));
+      api.focus();
+    },
+    [map, setMode]
+  );
 
   // filteredPlaces가 바뀔 때마다 지도 범위 업데이트
   useEffect(() => {
     if (!map || filteredPlaces.length === 0) return;
-
     const naver = (window as any).naver;
     if (!naver?.maps) return;
 
@@ -48,7 +75,36 @@ const MapPage = ({mode, setMode, places, participants}: {
       bottom: 0, // 하단 여백
       left: 0     // 좌측 여백
     });
+
   }, [map, filteredPlaces]);
+
+  // ② 공통 포커스: 선택 → 맵 이동 → 마커 살짝 확대 → 시트 모드 변경
+  
+  // 선택된 장소로 자동 포커스 (처음 한 번만)
+  useEffect(() => {
+    if (!selectedPlaceId || hasAutoFocused || !map || filteredPlaces.length === 0) return;
+
+    // 선택된 장소 찾기
+    const selectedPlaceIndex = filteredPlaces.findIndex(place => place.id === selectedPlaceId);
+    if (selectedPlaceIndex === -1) return;
+
+    // 해당 장소의 카테고리로 변경
+    const selectedPlace = places.find(place => place.id === selectedPlaceId);
+    if (selectedPlace && selectedPlace.label !== selectedCategory) {
+      setSelectedCategory(selectedPlace.label || "");
+      return; // 카테고리 변경 후 다음 렌더에서 포커스
+    }
+
+    // 마커 API가 준비될 때까지 대기
+    const timer = setTimeout(() => {
+      if (markerApiRef.current[selectedPlaceIndex]) {
+        focusToIndex(selectedPlaceIndex, false);
+        setHasAutoFocused(true);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [selectedPlaceId, hasAutoFocused, map, filteredPlaces, places, selectedCategory]);
 
   // 각 마커를 제어할 수 있는 작은 API 보관 (focus, 좌표)
   const markerApiRef = useRef<
@@ -73,25 +129,7 @@ const MapPage = ({mode, setMode, places, participants}: {
 
 
 
-  // ② 공통 포커스: 선택 → 맵 이동 → 마커 살짝 확대 → 시트 모드 변경
-  const focusToIndex = useCallback(
-    (idx: number, showOverlayOnSheet = false) => {
-      setSelectedIndex(idx);
 
-      // 마커 클릭에서 SelectedPlace 오버레이를 띄우고 싶다면 'hide'로 내리기
-      // (리스트 클릭은 BottomSheet 내부에서 이미 처리함)
-      setMode(showOverlayOnSheet ? "hide" : "half");
-
-      const api = markerApiRef.current[idx];
-      if (!api || !map || !(window as any).naver?.maps) return;
-
-      const { lat, lng } = api.getLatLng();
-      const naver = (window as any).naver;
-      map.panTo(new naver.maps.LatLng(lat, lng));
-      api.focus();
-    },
-    [map]
-  );
 
   // 마커 클릭 → 선택/포커스 + (오버레이 보이게) 시트 hide
   const handleMarkerClick = useCallback(
