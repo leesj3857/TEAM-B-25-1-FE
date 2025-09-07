@@ -104,6 +104,16 @@ const Map = () => {
     staleTime: 10 * 60 * 1000, // 10분간 데이터 유지
   });
 
+  useEffect(() => {
+    if (inviteCode) {
+      refetchPlaces();
+      refetchMidpoint();
+      refetchMeeting();
+      refetchParticipants();
+      refetchLine();
+    }
+  }, [inviteCode, refetchPlaces, refetchMidpoint, refetchMeeting, refetchParticipants, refetchLine]);
+
   // 장소 데이터 변환
   const places: MapPlace[] = placesData?.sections ? adaptPlacesFromApi(placesData.sections) : [];
 

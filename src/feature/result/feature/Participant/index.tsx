@@ -8,6 +8,7 @@ import { getMidpoint } from "../../../../api";
 import { getLineSubwayFromAPI } from "../../../../utils/getLineSubway";
 import { ParticipantGetResponse } from "../../../../api";
 import { useInviteCode } from "../../../../context/inviteCodeContext";
+import { useEffect } from "react";
 
 interface ParticipantProps {
     setIsEditing: (isEditing: boolean) => void;
@@ -19,7 +20,7 @@ export default function Participant({setIsEditing, participants, myParticipant}:
     const { inviteCode } = useInviteCode();
 
     // 미팅 정보를 가져오는 쿼리
-    const { data: meetingData } = useQuery({
+    const { data: meetingData, refetch: refetchMeeting } = useQuery({
         queryKey: ['meeting', inviteCode],
         queryFn: () => getMeeting(inviteCode),
         enabled: !!inviteCode,
@@ -27,7 +28,7 @@ export default function Participant({setIsEditing, participants, myParticipant}:
     });
 
     // 중간장소 정보를 가져오는 쿼리
-    const { data: midpointData } = useQuery({
+    const { data: midpointData, refetch: refetchMidpoint } = useQuery({
         queryKey: ['midpoint', inviteCode],
         queryFn: () => getMidpoint(inviteCode, "TIME_MATRIX"),
         enabled: !!inviteCode,
@@ -38,12 +39,18 @@ export default function Participant({setIsEditing, participants, myParticipant}:
     const midpointName = midpointData?.name || "";
 
     // 호선 정보를 가져오는 쿼리
-    const { data: lineData } = useQuery({
+    const { data: lineData, refetch: refetchLine } = useQuery({
         queryKey: ['subwayLine', midpointName],
         queryFn: () => getLineSubwayFromAPI(midpointName),
         enabled: !!midpointName,
         staleTime: 10 * 60 * 1000, // 10분간 데이터 유지
     });
+
+    useEffect(() => {
+        refetchMeeting();
+        refetchMidpoint();
+        refetchLine();
+    }, [inviteCode]);
 
     // 호선 정보 처리 (배열 형태로 변환)
     let subwayLines: string[] = [];
