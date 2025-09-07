@@ -263,7 +263,6 @@ const Container = styled.div`
   z-index: 1000;
   pointer-events: none;
 `;
-
 const ListContainer = styled.div<{
   mode: "hide" | "half" | "full";
   selectedIndex: number | null;
@@ -271,7 +270,7 @@ const ListContainer = styled.div<{
   isDragging: boolean;
 }>`
   width: 100%;
-  height: ${({ selectedIndex, mode }) => selectedIndex && mode === "hide" ? "140px" : "90dvh"};
+  height: ${({ selectedIndex, mode }) => typeof selectedIndex === 'number' && selectedIndex >= 0 && mode === "hide" ? "140px" : "90dvh"};
   display: flex;
   flex-direction: column;
   transform: ${({ mode, translateY }) => {
