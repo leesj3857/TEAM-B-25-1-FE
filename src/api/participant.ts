@@ -32,6 +32,7 @@ export interface ParticipantGetResponse {
   lat: number;
   lng: number;
   hasVoted: boolean;
+  address: string;
 }
 
 
@@ -73,4 +74,11 @@ export const deleteParticipant = async (
   return response.data;
 };
 
-
+export const getMyParticipant = async (
+  linkCode: string
+): Promise<ParticipantGetResponse> => {
+  const response: AxiosResponse<ParticipantGetResponse> = await apiClient.get(
+    `/meetings/${linkCode}/participants/me`
+  );
+  return response.data;
+};

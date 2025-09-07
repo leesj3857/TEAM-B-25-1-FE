@@ -10,7 +10,7 @@ import VoteResult from "./feature/VoteResult";
 import Participant from "./feature/Participant";
 import { useNavigate } from "react-router-dom";
 import EditInfo from "./feature/EditInfo";
-import { updateParticipant, getParticipants, ParticipantGetResponse } from "../../api";
+import { updateParticipant, getParticipants, ParticipantGetResponse, getMyParticipant } from "../../api";
 import { useInviteCode } from "../../context/inviteCodeContext";
 import { getLatLngByAddress } from "../../utils/getLng";
 import { useQuery } from "@tanstack/react-query";
@@ -29,33 +29,19 @@ export default function Result() {
     staleTime: 5 * 60 * 1000, // 5분간 데이터 유지
   });
 
+  // 로컬스토리지에서 내 참가자 정보 가져오기
+  const { data: myParticipantInfo, refetch: refetchMyParticipant } = useQuery({
+    queryKey: ['myParticipant', inviteCode],
+    queryFn: () => getMyParticipant(inviteCode),
+    enabled: !!inviteCode,
+    staleTime: 5 * 60 * 1000, // 5분간 데이터 유지
+  });
+
   useEffect(() => {
     refetchParticipants();
+    refetchMyParticipant();
   }, [inviteCode]);
 
-  // 로컬스토리지에서 내 참가자 정보 가져오기
-  const getMyParticipantInfo = () => {
-    if (!inviteCode) return null;
-    
-    const storedData = localStorage.getItem(inviteCode);
-    if (storedData) {
-      try {
-        const parsedData = JSON.parse(storedData);
-        return parsedData;
-      } catch (error) {
-        console.error('로컬스토리지 파싱 오류:', error);
-        return null;
-      }
-    }
-    return null;
-  };
-
-  // 내 참가자 정보
-  const myParticipantInfo = getMyParticipantInfo();
-  const myParticipantId = myParticipantInfo?.participantId;
-
-  // participants 중에서 나를 찾기
-  const myParticipant = participants.find((p: ParticipantGetResponse) => p.participantId === myParticipantId);
   const onSave = async (name: string, address: string, transport: string) => {
     if (!inviteCode) {
       console.error("inviteCode가 없습니다.");
@@ -114,7 +100,7 @@ export default function Result() {
       {isEditing && (
         <Body>
           <EditInfo 
-            name={myParticipant?.name || ""} 
+            name={myParticipantInfo?.name || ""} 
             address={myParticipantInfo?.address || ""} 
             transport={myParticipantInfo?.transportType || "PUBLIC"} 
             onSave={onSave} 
@@ -156,7 +142,7 @@ export default function Result() {
             <Participant 
               setIsEditing={setIsEditing}
               participants={participants}
-              myParticipant={myParticipant}
+              myParticipant={myParticipantInfo}
             />
           )}
         </Body>
