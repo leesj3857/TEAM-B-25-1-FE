@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import BottomSheet from "../feature/bottomSheet";
 import MapComponent from "../feature/map/components/Map";
 import Header from "../feature/mapHeader";
 import { useEffect, useState } from "react";

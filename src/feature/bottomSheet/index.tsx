@@ -158,6 +158,7 @@ export default function BottomSheet({
     <Container>
       <ListContainer
         mode={mode}
+        selectedIndex={selectedIndex}
         translateY={translateY}
         isDragging={isDragging}
       >
@@ -265,11 +266,12 @@ const Container = styled.div`
 
 const ListContainer = styled.div<{
   mode: "hide" | "half" | "full";
+  selectedIndex: number | null;
   translateY: number;
   isDragging: boolean;
 }>`
   width: 100%;
-  height: 90dvh;
+  height: ${({ selectedIndex, mode }) => selectedIndex && mode === "hide" ? "140px" : "90dvh"};
   display: flex;
   flex-direction: column;
   transform: ${({ mode, translateY }) => {

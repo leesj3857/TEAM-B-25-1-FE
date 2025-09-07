@@ -106,7 +106,7 @@ const Container = styled.div<{translateY: number, isDragging: boolean}>`
     align-items: center;
     justify-content: space-between;
     position: absolute;
-    bottom: 101%;
+    bottom: 105%;
     background: white;
     left: 50%;
     transform: translateX(-50%) translateY(${({translateY}) => translateY}px);
