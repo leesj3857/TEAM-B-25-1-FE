@@ -84,18 +84,23 @@ const MapPage = ({mode, setMode, places, participants, refetchPlaces, refetchMid
   
   // 선택된 장소로 자동 포커스 (처음 한 번만)
   useEffect(() => {
-    if (!selectedPlaceId || hasAutoFocused || !map || filteredPlaces.length === 0) return;
+    if (!selectedPlaceId || hasAutoFocused || !map || places.length === 0) return;
 
-    // 선택된 장소 찾기
-    const selectedPlaceIndex = filteredPlaces.findIndex(place => place.id === selectedPlaceId);
-    if (selectedPlaceIndex === -1) return;
-
-    // 해당 장소의 카테고리로 변경
+    // 먼저 해당 장소가 전체 places에 있는지 확인하고 카테고리 변경
     const selectedPlace = places.find(place => place.id === selectedPlaceId);
-    if (selectedPlace && selectedPlace.label !== selectedCategory) {
+    console.log("selectedPlace", selectedPlace);
+    
+    if (!selectedPlace) return;
+
+    // 선택된 장소가 현재 카테고리에 없으면 카테고리 변경
+    if (selectedPlace.label !== selectedCategory) {
       setSelectedCategory(selectedPlace.label || "");
       return; // 카테고리 변경 후 다음 렌더에서 포커스
     }
+
+    // 현재 카테고리에서 선택된 장소 찾기
+    const selectedPlaceIndex = filteredPlaces.findIndex(place => place.id === selectedPlaceId);
+    if (selectedPlaceIndex === -1 || filteredPlaces.length === 0) return;
 
     // 마커 API가 준비될 때까지 대기
     const timer = setTimeout(() => {
