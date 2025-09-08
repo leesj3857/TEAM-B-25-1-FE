@@ -63,11 +63,15 @@ export default function Result() {
 
       // 로컬스토리지 업데이트
       if (myParticipantInfo) {
-        const updatedInfo = {
-          ...myParticipantInfo,
-          participantName: name
-        };
-        localStorage.setItem(inviteCode, JSON.stringify(updatedInfo));
+        const storedData = localStorage.getItem(inviteCode);
+        if (storedData) {
+          const parsedData = JSON.parse(storedData);
+          const updatedInfo = {
+            ...parsedData,
+            participantName: name
+          };
+          localStorage.setItem(inviteCode, JSON.stringify(updatedInfo));
+        }
       }
 
       // 참가자 데이터 새로고침
