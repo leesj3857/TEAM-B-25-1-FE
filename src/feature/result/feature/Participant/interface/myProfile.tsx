@@ -25,6 +25,8 @@ export default function MyProfile({name, isDone, setIsEditing}: {name: string, i
         try {
             await deleteParticipant(inviteCode);
             
+            localStorage.removeItem(inviteCode);
+            
             // 전역상태에서 inviteCode 제거
             clearInviteCode();
             
