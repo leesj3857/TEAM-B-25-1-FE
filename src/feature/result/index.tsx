@@ -75,7 +75,8 @@ export default function Result() {
       }
 
       // 참가자 데이터 새로고침
-      refetchParticipants();
+      await refetchParticipants();
+      await refetchMyParticipant();
       
       // 성공적으로 저장되면 편집 모드 종료
       setIsEditing(false);
